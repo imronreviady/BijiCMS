@@ -1,11 +1,11 @@
 <?php
 /*
  *
- * - PopojiCMS Front End File
+ * - BijiCMS Front End File
  *
  * - File : gallery.php
  * - Version : 1.0
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
@@ -24,14 +24,14 @@ $router->match('GET|POST', '/album', function() use ($core, $templates) {
 	$lang = $core->setlang('gallery', WEB_LANG);
 	$info = array(
 		'page_title' => $lang['front_gallery'],
-		'page_desc' => $core->posetting[2]['value'],
-		'page_key' => $core->posetting[3]['value'],
+		'page_desc' => $core->setting[2]['value'],
+		'page_key' => $core->setting[3]['value'],
 		'social_mod' => $lang['front_gallery'],
-		'social_name' => $core->posetting[0]['value'],
-		'social_url' => $core->posetting[1]['value'].'/album',
-		'social_title' => $core->posetting[0]['value'],
-		'social_desc' => $core->posetting[2]['value'],
-		'social_img' => $core->posetting[1]['value'].'/'.DIR_INC.'/images/favicon.png',
+		'social_name' => $core->setting[0]['value'],
+		'social_url' => $core->setting[1]['value'].'/album',
+		'social_title' => $core->setting[0]['value'],
+		'social_desc' => $core->setting[2]['value'],
+		'social_img' => $core->setting[1]['value'].'/'.DIR_INC.'/images/favicon.png',
 		'page' => '1'
 	);
 	$adddata = array_merge($info, $lang);
@@ -52,14 +52,14 @@ $router->match('GET|POST', '/album/page/(\d+)', function($page) use ($core, $tem
 	$lang = $core->setlang('gallery', WEB_LANG);
 	$info = array(
 		'page_title' => $lang['front_gallery'],
-		'page_desc' => $core->posetting[2]['value'],
-		'page_key' => $core->posetting[3]['value'],
+		'page_desc' => $core->setting[2]['value'],
+		'page_key' => $core->setting[3]['value'],
 		'social_mod' => $lang['front_gallery'],
-		'social_name' => $core->posetting[0]['value'],
-		'social_url' => $core->posetting[1]['value'].'/album',
-		'social_title' => $core->posetting[0]['value'],
-		'social_desc' => $core->posetting[2]['value'],
-		'social_img' => $core->posetting[1]['value'].'/'.DIR_INC.'/images/favicon.png',
+		'social_name' => $core->setting[0]['value'],
+		'social_url' => $core->setting[1]['value'].'/album',
+		'social_title' => $core->setting[0]['value'],
+		'social_desc' => $core->setting[2]['value'],
+		'social_img' => $core->setting[1]['value'].'/'.DIR_INC.'/images/favicon.png',
 		'page' => $page
 	);
 	$adddata = array_merge($info, $lang);
@@ -78,22 +78,22 @@ $router->match('GET|POST', '/album/page/(\d+)', function($page) use ($core, $tem
 */
 $router->match('GET|POST', '/gallery/([a-z0-9_-]+)', function($alb) use ($core, $templates) {
 	$lang = $core->setlang('gallery', WEB_LANG);
-	$album = $core->podb->from('album')
-		->where('seotitle', $core->postring->valid($alb, 'xss'))
+	$album = $core->db->from('album')
+		->where('seotitle', $core->string->valid($alb, 'xss'))
 		->where('active', 'Y')
 		->limit(1)
 		->fetch();
 	if ($album) {
 		$info = array(
 			'page_title' => $lang['front_gallery'].' '.$album['title'],
-			'page_desc' => $core->posetting[2]['value'],
-			'page_key' => $core->posetting[3]['value'],
+			'page_desc' => $core->setting[2]['value'],
+			'page_key' => $core->setting[3]['value'],
 			'social_mod' => $lang['front_gallery'].' '.$album['title'],
-			'social_name' => $core->posetting[0]['value'],
-			'social_url' => $core->posetting[1]['value'].'/gallery/'.$album['seotitle'],
-			'social_title' => $core->posetting[0]['value'],
-			'social_desc' => $core->posetting[2]['value'],
-			'social_img' => $core->posetting[1]['value'].'/'.DIR_INC.'/images/favicon.png',
+			'social_name' => $core->setting[0]['value'],
+			'social_url' => $core->setting[1]['value'].'/gallery/'.$album['seotitle'],
+			'social_title' => $core->setting[0]['value'],
+			'social_desc' => $core->setting[2]['value'],
+			'social_img' => $core->setting[1]['value'].'/'.DIR_INC.'/images/favicon.png',
 			'page' => '1'
 		);
 		$adddata = array_merge($info, $lang);
@@ -104,14 +104,14 @@ $router->match('GET|POST', '/gallery/([a-z0-9_-]+)', function($alb) use ($core, 
 	} else {
 		$info = array(
 			'page_title' => $lang['front_gallery_not_found'],
-			'page_desc' => $core->posetting[2]['value'],
-			'page_key' => $core->posetting[3]['value'],
+			'page_desc' => $core->setting[2]['value'],
+			'page_key' => $core->setting[3]['value'],
 			'social_mod' => $lang['front_gallery'],
-			'social_name' => $core->posetting[0]['value'],
-			'social_url' => $core->posetting[1]['value'],
+			'social_name' => $core->setting[0]['value'],
+			'social_url' => $core->setting[1]['value'],
 			'social_title' => $lang['front_gallery_not_found'],
-			'social_desc' => $core->posetting[2]['value'],
-			'social_img' => $core->posetting[1]['value'].'/'.DIR_INC.'/images/favicon.png'
+			'social_desc' => $core->setting[2]['value'],
+			'social_img' => $core->setting[1]['value'].'/'.DIR_INC.'/images/favicon.png'
 		);
 		$adddata = array_merge($info, $lang);
 		$templates->addData(
@@ -131,22 +131,22 @@ $router->match('GET|POST', '/gallery/([a-z0-9_-]+)', function($alb) use ($core, 
 */
 $router->match('GET|POST', '/gallery/([a-z0-9_-]+)/page/(\d+)', function($alb, $page) use ($core, $templates) {
 	$lang = $core->setlang('gallery', WEB_LANG);
-	$album = $core->podb->from('album')
-		->where('seotitle', $core->postring->valid($alb, 'xss'))
+	$album = $core->db->from('album')
+		->where('seotitle', $core->string->valid($alb, 'xss'))
 		->where('active', 'Y')
 		->limit(1)
 		->fetch();
 	if ($album) {
 		$info = array(
 			'page_title' => $lang['front_gallery'].' '.$album['title'],
-			'page_desc' => $core->posetting[2]['value'],
-			'page_key' => $core->posetting[3]['value'],
+			'page_desc' => $core->setting[2]['value'],
+			'page_key' => $core->setting[3]['value'],
 			'social_mod' => $lang['front_gallery'].' '.$album['title'],
-			'social_name' => $core->posetting[0]['value'],
-			'social_url' => $core->posetting[1]['value'].'/gallery/'.$album['seotitle'],
-			'social_title' => $core->posetting[0]['value'],
-			'social_desc' => $core->posetting[2]['value'],
-			'social_img' => $core->posetting[1]['value'].'/'.DIR_INC.'/images/favicon.png',
+			'social_name' => $core->setting[0]['value'],
+			'social_url' => $core->setting[1]['value'].'/gallery/'.$album['seotitle'],
+			'social_title' => $core->setting[0]['value'],
+			'social_desc' => $core->setting[2]['value'],
+			'social_img' => $core->setting[1]['value'].'/'.DIR_INC.'/images/favicon.png',
 			'page' => $page
 		);
 		$adddata = array_merge($info, $lang);
@@ -157,14 +157,14 @@ $router->match('GET|POST', '/gallery/([a-z0-9_-]+)/page/(\d+)', function($alb, $
 	} else {
 		$info = array(
 			'page_title' => $lang['front_gallery_not_found'],
-			'page_desc' => $core->posetting[2]['value'],
-			'page_key' => $core->posetting[3]['value'],
+			'page_desc' => $core->setting[2]['value'],
+			'page_key' => $core->setting[3]['value'],
 			'social_mod' => $lang['front_gallery'],
-			'social_name' => $core->posetting[0]['value'],
-			'social_url' => $core->posetting[1]['value'],
+			'social_name' => $core->setting[0]['value'],
+			'social_url' => $core->setting[1]['value'],
 			'social_title' => $lang['front_gallery_not_found'],
-			'social_desc' => $core->posetting[2]['value'],
-			'social_img' => $core->posetting[1]['value'].'/'.DIR_INC.'/images/favicon.png'
+			'social_desc' => $core->setting[2]['value'],
+			'social_img' => $core->setting[1]['value'].'/'.DIR_INC.'/images/favicon.png'
 		);
 		$adddata = array_merge($info, $lang);
 		$templates->addData(

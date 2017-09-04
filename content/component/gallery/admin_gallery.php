@@ -1,11 +1,11 @@
 <?php
 /*
  *
- * - PopojiCMS Admin File
+ * - BijiCMS Admin File
  *
  * - File : admin_gallery.php
  * - Version : 1.0
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
@@ -36,7 +36,7 @@ if (empty($_SESSION['namauser']) AND empty($_SESSION['passuser']) AND $_SESSION[
 	exit;
 }
 
-class Gallery extends PoCore
+class Gallery extends Core
 {
 
 	/**
@@ -59,14 +59,14 @@ class Gallery extends PoCore
 	public function index()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'gallery', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		?>
 		<div class="block-content">
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->headTitle($GLOBALS['_']['component_name'], '
+					<?=$this->html->headTitle($GLOBALS['_']['component_name'], '
 						<div class="btn-title pull-right">
 							<a href="admin.php?mod=gallery&act=addnew" class="btn btn-success btn-sm"><i class="fa fa-plus"></i> '.$GLOBALS['_']['addnew'].'</a>
 							<a href="admin.php?mod=gallery&act=album" class="btn btn-success btn-sm"><i class="fa fa-book"></i> '.$GLOBALS['_']['gallery_album'].'</a>
@@ -76,8 +76,8 @@ class Gallery extends PoCore
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'route.php?mod=gallery&act=multidelete', 'autocomplete' => 'off'));?>
-						<?=$this->pohtml->inputHidden(array('name' => 'totaldata', 'value' => '0', 'options' => 'id="totaldata"'));?>
+					<?=$this->html->formStart(array('method' => 'post', 'action' => 'route.php?mod=gallery&act=multidelete', 'autocomplete' => 'off'));?>
+						<?=$this->html->inputHidden(array('name' => 'totaldata', 'value' => '0', 'options' => 'id="totaldata"'));?>
 						<?php
 							$columns = array(
 								array('title' => 'Id', 'options' => 'style="width:30px;"'),
@@ -86,12 +86,12 @@ class Gallery extends PoCore
 								array('title' => $GLOBALS['_']['gallery_action'], 'options' => 'class="no-sort" style="width:50px;"')
 							);
 						?>
-						<?=$this->pohtml->createTable(array('id' => 'table-gallery', 'class' => 'table table-striped table-bordered'), $columns, $tfoot = true);?>
-					<?=$this->pohtml->formEnd();?>
+						<?=$this->html->createTable(array('id' => 'table-gallery', 'class' => 'table table-striped table-bordered'), $columns, $tfoot = true);?>
+					<?=$this->html->formEnd();?>
 				</div>
 			</div>
 		</div>
-		<?=$this->pohtml->dialogDelete('gallery');?>
+		<?=$this->html->dialogDelete('gallery');?>
 		<?php
 	}
 
@@ -104,7 +104,7 @@ class Gallery extends PoCore
 	public function datatable()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'gallery', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		$table = 'gallery';
@@ -138,7 +138,7 @@ class Gallery extends PoCore
 			array('db' => 'g.picture', 'dt' => '', 'field' => 'picture'),
 		);
 		$joinquery = "FROM gallery AS g JOIN album AS a ON (a.id_album = g.id_album)";
-		echo json_encode(SSP::simple($_POST, $this->poconnect, $table, $primarykey, $columns, $joinquery));
+		echo json_encode(SSP::simple($_POST, $this->connect, $table, $primarykey, $columns, $joinquery));
 	}
 
 	/**
@@ -150,43 +150,43 @@ class Gallery extends PoCore
 	public function addnew()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'gallery', 'create')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
 			$gallery = array(
-				'id_album' => $this->postring->valid($_POST['id_album'], 'sql'),
-				'title' => $this->postring->valid($_POST['title'], 'xss'),
+				'id_album' => $this->string->valid($_POST['id_album'], 'sql'),
+				'title' => $this->string->valid($_POST['title'], 'xss'),
 				'content' => stripslashes(htmlspecialchars($_POST['content'],ENT_QUOTES)),
 				'picture' => $_POST['picture']
 			);
-			$query_gallery = $this->podb->insertInto('gallery')->values($gallery);
+			$query_gallery = $this->db->insertInto('gallery')->values($gallery);
 			$query_gallery->execute();
-			$this->poflash->success($GLOBALS['_']['gallery_message_1'], 'admin.php?mod=gallery');
+			$this->flash->success($GLOBALS['_']['gallery_message_1'], 'admin.php?mod=gallery');
 		}
 		?>
 		<div class="block-content">
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->headTitle($GLOBALS['_']['gallery_addnew']);?>
+					<?=$this->html->headTitle($GLOBALS['_']['gallery_addnew']);?>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'route.php?mod=gallery&act=addnew', 'autocomplete' => 'off'));?>
+					<?=$this->html->formStart(array('method' => 'post', 'action' => 'route.php?mod=gallery&act=addnew', 'autocomplete' => 'off'));?>
 						<div class="row">
 							<div class="col-md-5">
 								<div class="input-group">
 									<?php
-										$albs = $this->podb->from('album')
+										$albs = $this->db->from('album')
 											->where('active', 'Y')
 											->orderBy('id_album DESC')
 											->fetchAll();
-										echo $this->pohtml->inputSelectNoOpt(array('id' => 'id_album', 'label' => $GLOBALS['_']['gallery_album'], 'name' => 'id_album', 'mandatory' => true));
+										echo $this->html->inputSelectNoOpt(array('id' => 'id_album', 'label' => $GLOBALS['_']['gallery_album'], 'name' => 'id_album', 'mandatory' => true));
 										foreach($albs as $alb){
 											echo '<option value="'.$alb['id_album'].'">'.$alb['title'].'</option>';
 										}
-										echo $this->pohtml->inputSelectNoOptEnd();
+										echo $this->html->inputSelectNoOptEnd();
 									?>
 									<span class="input-group-btn" style="padding-top:25px !important;">
 										<a href="admin.php?mod=gallery&act=addnewalbum" class="btn btn-success"><?=$GLOBALS['_']['addnew'];?></a>
@@ -194,28 +194,28 @@ class Gallery extends PoCore
 								</div>
 							</div>
 							<div class="col-md-7">
-								<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['gallery_title'], 'name' => 'title', 'id' => 'title', 'mandatory' => true, 'options' => 'required'));?>
+								<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['gallery_title'], 'name' => 'title', 'id' => 'title', 'mandatory' => true, 'options' => 'required'));?>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-12">
 								<div class="form-group">
 									<label for="message"><?=$GLOBALS['_']['gallery_content'];?></label>
-									<textarea id="po-wysiwyg" name="content" class="form-control" style="width:100%; height:300px;"></textarea>
+									<textarea id="wysiwyg" name="content" class="form-control" style="width:100%; height:300px;"></textarea>
 								</div>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-6">
-								<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['gallery_picture'], 'name' => 'picture', 'id' => 'picture', 'mandatory' => true, 'options' => 'required',), $inputgroup = true, $inputgroupopt = array('href' => '../'.DIR_INC.'/js/filemanager/dialog.php?type=1&field_id=picture', 'id' => 'browse-file', 'class' => 'btn-success', 'options' => '', 'title' => $GLOBALS['_']['action_7'].' '.$GLOBALS['_']['gallery_picture']));?>
+								<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['gallery_picture'], 'name' => 'picture', 'id' => 'picture', 'mandatory' => true, 'options' => 'required',), $inputgroup = true, $inputgroupopt = array('href' => '../'.DIR_INC.'/js/filemanager/dialog.php?type=1&field_id=picture', 'id' => 'browse-file', 'class' => 'btn-success', 'options' => '', 'title' => $GLOBALS['_']['action_7'].' '.$GLOBALS['_']['gallery_picture']));?>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-12">
-								<?=$this->pohtml->formAction();?>
+								<?=$this->html->formAction();?>
 							</div>
 						</div>
-					<?=$this->pohtml->formEnd();?>
+					<?=$this->html->formEnd();?>
 				</div>
 			</div>
 		</div>
@@ -231,58 +231,58 @@ class Gallery extends PoCore
 	public function edit()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'gallery', 'update')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
 			$gallery = array(
-				'id_album' => $this->postring->valid($_POST['id_album'], 'sql'),
-				'title' => $this->postring->valid($_POST['title'], 'xss'),
+				'id_album' => $this->string->valid($_POST['id_album'], 'sql'),
+				'title' => $this->string->valid($_POST['title'], 'xss'),
 				'content' => stripslashes(htmlspecialchars($_POST['content'],ENT_QUOTES)),
 				'picture' => $_POST['picture']
 			);
-			$query_gallery = $this->podb->update('gallery')
+			$query_gallery = $this->db->update('gallery')
 				->set($gallery)
-				->where('id_gallery', $this->postring->valid($_POST['id'], 'sql'));
+				->where('id_gallery', $this->string->valid($_POST['id'], 'sql'));
 			$query_gallery->execute();
-			$this->poflash->success($GLOBALS['_']['gallery_message_2'], 'admin.php?mod=gallery');
+			$this->flash->success($GLOBALS['_']['gallery_message_2'], 'admin.php?mod=gallery');
 		}
-		$id = $this->postring->valid($_GET['id'], 'sql');
-		$current_gallery = $this->podb->from('gallery')
+		$id = $this->string->valid($_GET['id'], 'sql');
+		$current_gallery = $this->db->from('gallery')
 			->select('album.title AS album_title')
 			->leftJoin('album ON album.id_album = gallery.id_album')
 			->where('gallery.id_gallery', $id)
 			->limit(1)
 			->fetch();
 		if (empty($current_gallery)) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		?>
 		<div class="block-content">
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->headTitle($GLOBALS['_']['gallery_edit']);?>
+					<?=$this->html->headTitle($GLOBALS['_']['gallery_edit']);?>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'route.php?mod=gallery&act=edit', 'autocomplete' => 'off'));?>
-						<?=$this->pohtml->inputHidden(array('name' => 'id', 'value' => $current_gallery['id_gallery']));?>
+					<?=$this->html->formStart(array('method' => 'post', 'action' => 'route.php?mod=gallery&act=edit', 'autocomplete' => 'off'));?>
+						<?=$this->html->inputHidden(array('name' => 'id', 'value' => $current_gallery['id_gallery']));?>
 						<div class="row">
 							<div class="col-md-5">
 								<div class="input-group">
 									<?php
-										$albs = $this->podb->from('album')
+										$albs = $this->db->from('album')
 											->where('active', 'Y')
 											->orderBy('id_album DESC')
 											->fetchAll();
-										echo $this->pohtml->inputSelectNoOpt(array('id' => 'id_album', 'label' => $GLOBALS['_']['gallery_album'], 'name' => 'id_album', 'mandatory' => true));
+										echo $this->html->inputSelectNoOpt(array('id' => 'id_album', 'label' => $GLOBALS['_']['gallery_album'], 'name' => 'id_album', 'mandatory' => true));
 										echo '<option value="'.$current_gallery['id_album'].'">'.$GLOBALS['_']['gallery_select'].' - '.$current_gallery['album_title'].'</option>';
 										foreach($albs as $alb){
 											echo '<option value="'.$alb['id_album'].'">'.$alb['title'].'</option>';
 										}
-										echo $this->pohtml->inputSelectNoOptEnd();
+										echo $this->html->inputSelectNoOptEnd();
 									?>
 									<span class="input-group-btn" style="padding-top:25px !important;">
 										<a href="admin.php?mod=gallery&act=addnewalbum" class="btn btn-success"><?=$GLOBALS['_']['addnew'];?></a>
@@ -290,28 +290,28 @@ class Gallery extends PoCore
 								</div>
 							</div>
 							<div class="col-md-7">
-								<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['gallery_title'], 'name' => 'title', 'id' => 'title', 'value' => $current_gallery['title'], 'mandatory' => true, 'options' => 'required'));?>
+								<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['gallery_title'], 'name' => 'title', 'id' => 'title', 'value' => $current_gallery['title'], 'mandatory' => true, 'options' => 'required'));?>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-12">
 								<div class="form-group">
 									<label for="message"><?=$GLOBALS['_']['gallery_content'];?></label>
-									<textarea id="po-wysiwyg" name="content" class="form-control" style="width:100%; height:300px;"><?=html_entity_decode($current_gallery['content']);?></textarea>
+									<textarea id="wysiwyg" name="content" class="form-control" style="width:100%; height:300px;"><?=html_entity_decode($current_gallery['content']);?></textarea>
 								</div>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-6">
-								<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['gallery_picture'], 'name' => 'picture', 'id' => 'picture', 'value' => $current_gallery['picture'], 'mandatory' => true, 'options' => 'required',), $inputgroup = true, $inputgroupopt = array('href' => '../'.DIR_INC.'/js/filemanager/dialog.php?type=1&field_id=picture', 'id' => 'browse-file', 'class' => 'btn-success', 'options' => '', 'title' => $GLOBALS['_']['action_7'].' '.$GLOBALS['_']['gallery_picture']));?>
+								<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['gallery_picture'], 'name' => 'picture', 'id' => 'picture', 'value' => $current_gallery['picture'], 'mandatory' => true, 'options' => 'required',), $inputgroup = true, $inputgroupopt = array('href' => '../'.DIR_INC.'/js/filemanager/dialog.php?type=1&field_id=picture', 'id' => 'browse-file', 'class' => 'btn-success', 'options' => '', 'title' => $GLOBALS['_']['action_7'].' '.$GLOBALS['_']['gallery_picture']));?>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-12">
-								<?=$this->pohtml->formAction();?>
+								<?=$this->html->formAction();?>
 							</div>
 						</div>
-					<?=$this->pohtml->formEnd();?>
+					<?=$this->html->formEnd();?>
 				</div>
 			</div>
 		</div>
@@ -327,13 +327,13 @@ class Gallery extends PoCore
 	public function delete()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'gallery', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$query = $this->podb->deleteFrom('gallery')->where('id_gallery', $this->postring->valid($_POST['id'], 'sql'));
+			$query = $this->db->deleteFrom('gallery')->where('id_gallery', $this->string->valid($_POST['id'], 'sql'));
 			$query->execute();
-			$this->poflash->success($GLOBALS['_']['gallery_message_3'], 'admin.php?mod=gallery');
+			$this->flash->success($GLOBALS['_']['gallery_message_3'], 'admin.php?mod=gallery');
 		}
 	}
 
@@ -346,20 +346,20 @@ class Gallery extends PoCore
 	public function multidelete()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'gallery', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$totaldata = $this->postring->valid($_POST['totaldata'], 'xss');
+			$totaldata = $this->string->valid($_POST['totaldata'], 'xss');
 			if ($totaldata != "0") {
 				$items = $_POST['item'];
 				foreach($items as $item){
-					$query = $this->podb->deleteFrom('gallery')->where('id_gallery', $this->postring->valid($item['deldata'], 'sql'));
+					$query = $this->db->deleteFrom('gallery')->where('id_gallery', $this->string->valid($item['deldata'], 'sql'));
 					$query->execute();
 				}
-				$this->poflash->success($GLOBALS['_']['gallery_message_3'], 'admin.php?mod=gallery');
+				$this->flash->success($GLOBALS['_']['gallery_message_3'], 'admin.php?mod=gallery');
 			} else {
-				$this->poflash->error($GLOBALS['_']['gallery_message_6'], 'admin.php?mod=gallery');
+				$this->flash->error($GLOBALS['_']['gallery_message_6'], 'admin.php?mod=gallery');
 			}
 		}
 	}
@@ -373,14 +373,14 @@ class Gallery extends PoCore
 	public function album()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'gallery', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		?>
 		<div class="block-content">
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->headTitle($GLOBALS['_']['component_name_album'], '
+					<?=$this->html->headTitle($GLOBALS['_']['component_name_album'], '
 						<div class="btn-title pull-right">
 							<a href="admin.php?mod=gallery&act=addnewalbum" class="btn btn-success btn-sm"><i class="fa fa-plus"></i> '.$GLOBALS['_']['addnew'].'</a>
 							<a href="admin.php?mod=gallery" class="btn btn-success btn-sm"><i class="fa fa-picture-o"></i> '.$GLOBALS['_']['gallery_back'].'</a>
@@ -390,8 +390,8 @@ class Gallery extends PoCore
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'route.php?mod=gallery&act=multideletealbum', 'autocomplete' => 'off'));?>
-						<?=$this->pohtml->inputHidden(array('name' => 'totaldata', 'value' => '0', 'options' => 'id="totaldata"'));?>
+					<?=$this->html->formStart(array('method' => 'post', 'action' => 'route.php?mod=gallery&act=multideletealbum', 'autocomplete' => 'off'));?>
+						<?=$this->html->inputHidden(array('name' => 'totaldata', 'value' => '0', 'options' => 'id="totaldata"'));?>
 						<?php
 							$columns = array(
 								array('title' => 'Id', 'options' => 'style="width:30px;"'),
@@ -400,12 +400,12 @@ class Gallery extends PoCore
 								array('title' => $GLOBALS['_']['gallery_action'], 'options' => 'class="no-sort" style="width:50px;"')
 							);
 						?>
-						<?=$this->pohtml->createTable(array('id' => 'table-album', 'class' => 'table table-striped table-bordered'), $columns, $tfoot = true);?>
-					<?=$this->pohtml->formEnd();?>
+						<?=$this->html->createTable(array('id' => 'table-album', 'class' => 'table table-striped table-bordered'), $columns, $tfoot = true);?>
+					<?=$this->html->formEnd();?>
 				</div>
 			</div>
 		</div>
-		<?=$this->pohtml->dialogDelete('gallery', 'deletealbum');?>
+		<?=$this->html->dialogDelete('gallery', 'deletealbum');?>
 		<?php
 	}
 
@@ -418,7 +418,7 @@ class Gallery extends PoCore
 	public function datatable2()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'gallery', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		$table = 'album';
@@ -450,7 +450,7 @@ class Gallery extends PoCore
 				}
 			)
 		);
-		echo json_encode(SSP::simple($_POST, $this->poconnect, $table, $primarykey, $columns));
+		echo json_encode(SSP::simple($_POST, $this->connect, $table, $primarykey, $columns));
 	}
 
 	/**
@@ -462,39 +462,39 @@ class Gallery extends PoCore
 	public function addnewalbum()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'gallery', 'create')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
 			$album = array(
-				'title' => $this->postring->valid($_POST['title'], 'xss'),
-				'seotitle' => $this->postring->seo_title($this->postring->valid($_POST['title'], 'xss'))
+				'title' => $this->string->valid($_POST['title'], 'xss'),
+				'seotitle' => $this->string->seo_title($this->string->valid($_POST['title'], 'xss'))
 			);
-			$query_album = $this->podb->insertInto('album')->values($album);
+			$query_album = $this->db->insertInto('album')->values($album);
 			$query_album->execute();
-			$this->poflash->success($GLOBALS['_']['gallery_album_message_1'], 'admin.php?mod=gallery&act=album');
+			$this->flash->success($GLOBALS['_']['gallery_album_message_1'], 'admin.php?mod=gallery&act=album');
 		}
 		?>
 		<div class="block-content">
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->headTitle($GLOBALS['_']['gallery_album_addnew']);?>
+					<?=$this->html->headTitle($GLOBALS['_']['gallery_album_addnew']);?>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'route.php?mod=gallery&act=addnewalbum', 'autocomplete' => 'off'));?>
+					<?=$this->html->formStart(array('method' => 'post', 'action' => 'route.php?mod=gallery&act=addnewalbum', 'autocomplete' => 'off'));?>
 						<div class="row">
 							<div class="col-md-12">
-								<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['gallery_title'], 'name' => 'title', 'id' => 'title', 'mandatory' => true, 'options' => 'required'));?>
+								<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['gallery_title'], 'name' => 'title', 'id' => 'title', 'mandatory' => true, 'options' => 'required'));?>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-12">
-								<?=$this->pohtml->formAction();?>
+								<?=$this->html->formAction();?>
 							</div>
 						</div>
-					<?=$this->pohtml->formEnd();?>
+					<?=$this->html->formEnd();?>
 				</div>
 			</div>
 		</div>
@@ -510,44 +510,44 @@ class Gallery extends PoCore
 	public function editalbum()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'gallery', 'update')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
 			$album = array(
-				'title' => $this->postring->valid($_POST['title'], 'xss'),
-				'seotitle' => $this->postring->seo_title($this->postring->valid($_POST['title'], 'xss')),
-				'active' => $this->postring->valid($_POST['active'], 'xss')
+				'title' => $this->string->valid($_POST['title'], 'xss'),
+				'seotitle' => $this->string->seo_title($this->string->valid($_POST['title'], 'xss')),
+				'active' => $this->string->valid($_POST['active'], 'xss')
 			);
-			$query_album = $this->podb->update('album')
+			$query_album = $this->db->update('album')
 				->set($album)
-				->where('id_album', $this->postring->valid($_POST['id'], 'sql'));
+				->where('id_album', $this->string->valid($_POST['id'], 'sql'));
 			$query_album->execute();
-			$this->poflash->success($GLOBALS['_']['gallery_album_message_2'], 'admin.php?mod=gallery&act=album');
+			$this->flash->success($GLOBALS['_']['gallery_album_message_2'], 'admin.php?mod=gallery&act=album');
 		}
-		$id = $this->postring->valid($_GET['id'], 'sql');
-		$current_album = $this->podb->from('album')
+		$id = $this->string->valid($_GET['id'], 'sql');
+		$current_album = $this->db->from('album')
 			->where('id_album', $id)
 			->limit(1)
 			->fetch();
 		if (empty($current_album)) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		?>
 		<div class="block-content">
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->headTitle($GLOBALS['_']['gallery_album_edit']);?>
+					<?=$this->html->headTitle($GLOBALS['_']['gallery_album_edit']);?>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'route.php?mod=gallery&act=editalbum', 'autocomplete' => 'off'));?>
-						<?=$this->pohtml->inputHidden(array('name' => 'id', 'value' => $current_album['id_album']));?>
+					<?=$this->html->formStart(array('method' => 'post', 'action' => 'route.php?mod=gallery&act=editalbum', 'autocomplete' => 'off'));?>
+						<?=$this->html->inputHidden(array('name' => 'id', 'value' => $current_album['id_album']));?>
 						<div class="row">
 							<div class="col-md-12">
-								<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['gallery_title'], 'name' => 'title', 'id' => 'title', 'value' => $current_album['title'], 'mandatory' => true, 'options' => 'required'));?>
+								<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['gallery_title'], 'name' => 'title', 'id' => 'title', 'value' => $current_album['title'], 'mandatory' => true, 'options' => 'required'));?>
 							</div>
 						</div>
 						<div class="row">
@@ -558,23 +558,23 @@ class Gallery extends PoCore
 											array('name' => 'active', 'id' => 'active', 'value' => 'Y', 'options' => '', 'title' => 'Y'),
 											array('name' => 'active', 'id' => 'active', 'value' => 'N', 'options' => 'checked', 'title' => 'N')
 										);
-										echo $this->pohtml->inputRadio(array('label' => $GLOBALS['_']['gallery_active'], 'mandatory' => true), $radioitem, $inline = true);
+										echo $this->html->inputRadio(array('label' => $GLOBALS['_']['gallery_active'], 'mandatory' => true), $radioitem, $inline = true);
 									} else {
 										$radioitem = array(
 											array('name' => 'active', 'id' => 'active', 'value' => 'Y', 'options' => 'checked', 'title' => 'Y'),
 											array('name' => 'active', 'id' => 'active', 'value' => 'N', 'options' => '', 'title' => 'N')
 										);
-										echo $this->pohtml->inputRadio(array('label' => $GLOBALS['_']['gallery_active'], 'mandatory' => true), $radioitem, $inline = true);
+										echo $this->html->inputRadio(array('label' => $GLOBALS['_']['gallery_active'], 'mandatory' => true), $radioitem, $inline = true);
 									}
 								?>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-12">
-								<?=$this->pohtml->formAction();?>
+								<?=$this->html->formAction();?>
 							</div>
 						</div>
-					<?=$this->pohtml->formEnd();?>
+					<?=$this->html->formEnd();?>
 				</div>
 			</div>
 		</div>
@@ -590,13 +590,13 @@ class Gallery extends PoCore
 	public function deletealbum()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'gallery', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$query = $this->podb->deleteFrom('album')->where('id_album', $this->postring->valid($_POST['id'], 'sql'));
+			$query = $this->db->deleteFrom('album')->where('id_album', $this->string->valid($_POST['id'], 'sql'));
 			$query->execute();
-			$this->poflash->success($GLOBALS['_']['gallery_album_message_3'], 'admin.php?mod=gallery&act=album');
+			$this->flash->success($GLOBALS['_']['gallery_album_message_3'], 'admin.php?mod=gallery&act=album');
 		}
 	}
 
@@ -609,20 +609,20 @@ class Gallery extends PoCore
 	public function multideletealbum()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'gallery', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$totaldata = $this->postring->valid($_POST['totaldata'], 'xss');
+			$totaldata = $this->string->valid($_POST['totaldata'], 'xss');
 			if ($totaldata != "0") {
 				$items = $_POST['item'];
 				foreach($items as $item){
-					$query = $this->podb->deleteFrom('album')->where('id_album', $this->postring->valid($item['deldata'], 'sql'));
+					$query = $this->db->deleteFrom('album')->where('id_album', $this->string->valid($item['deldata'], 'sql'));
 					$query->execute();
 				}
-				$this->poflash->success($GLOBALS['_']['gallery_album_message_3'], 'admin.php?mod=gallery&act=album');
+				$this->flash->success($GLOBALS['_']['gallery_album_message_3'], 'admin.php?mod=gallery&act=album');
 			} else {
-				$this->poflash->error($GLOBALS['_']['gallery_album_message_6'], 'admin.php?mod=gallery&act=album');
+				$this->flash->error($GLOBALS['_']['gallery_album_message_6'], 'admin.php?mod=gallery&act=album');
 			}
 		}
 	}
