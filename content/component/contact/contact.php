@@ -1,11 +1,11 @@
 <?php
 /*
  *
- * - PopojiCMS Front End File
+ * - BijiCMS Front End File
  *
  * - File : contact.php
  * - Version : 1.0
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
@@ -24,19 +24,19 @@ $router->match('GET|POST', '/contact', function() use ($core, $templates) {
 	$alertmsg = '';
 	$lang = $core->setlang('contact', WEB_LANG);
 	if (!empty($_POST)) {
-		$core->poval->validation_rules(array(
+		$core->val->validation_rules(array(
 			'contact_name' => 'required|max_len,100|min_len,3',
 			'contact_email' => 'required|valid_email',
 			'contact_subject' => 'required|max_len,255|min_len,6',
 			'contact_message' => 'required|min_len,10'
 		));
-		$core->poval->filter_rules(array(
+		$core->val->filter_rules(array(
 			'contact_name' => 'trim|sanitize_string',
 			'contact_email' => 'trim|sanitize_string',
 			'contact_subject' => 'trim|sanitize_email',
 			'contact_message' => 'trim|sanitize_string'
 		));
-		$validated_data = $core->poval->run($_POST);
+		$validated_data = $core->val->run($_POST);
 		if ($validated_data === false) {
 			$alertmsg = '<div id="contact-form-result">
 				<div class="alert alert-warning" role="alert">
@@ -51,7 +51,7 @@ $router->match('GET|POST', '/contact', function() use ($core, $templates) {
 				'subject' => $_POST['contact_subject'],
 				'message' => $_POST['contact_message']
 			);
-			$query = $core->podb->insertInto('contact')->values($data);
+			$query = $core->db->insertInto('contact')->values($data);
 			$query->execute();
 			unset($_POST);
 			$alertmsg = '<div id="contact-form-result">
@@ -64,14 +64,14 @@ $router->match('GET|POST', '/contact', function() use ($core, $templates) {
 	}
 	$info = array(
 		'page_title' => $lang['front_contact'],
-		'page_desc' => $core->posetting[2]['value'],
-		'page_key' => $core->posetting[3]['value'],
+		'page_desc' => $core->setting[2]['value'],
+		'page_key' => $core->setting[3]['value'],
 		'social_mod' => $lang['front_contact'],
-		'social_name' => $core->posetting[0]['value'],
-		'social_url' => $core->posetting[1]['value'],
-		'social_title' => $core->posetting[0]['value'],
-		'social_desc' => $core->posetting[2]['value'],
-		'social_img' => $core->posetting[1]['value'].'/'.DIR_INC.'/images/favicon.png',
+		'social_name' => $core->setting[0]['value'],
+		'social_url' => $core->setting[1]['value'],
+		'social_title' => $core->setting[0]['value'],
+		'social_desc' => $core->setting[2]['value'],
+		'social_img' => $core->setting[1]['value'].'/'.DIR_INC.'/images/favicon.png',
 		'alertmsg' => $alertmsg
 	);
 	$adddata = array_merge($info, $lang);

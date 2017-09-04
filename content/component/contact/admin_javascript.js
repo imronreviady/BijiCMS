@@ -1,15 +1,15 @@
 /*
  *
- * - PopojiCMS Javascript
+ * - BijiCMS Javascript
  *
  * - File : admin_javascript.js
  * - Version : 1.0
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
- * Ini adalah file utama javascript PopojiCMS yang memuat semua javascript di kontak.
- * This is a main javascript file from PopojiCMS which contains all javascript in contact.
+ * Ini adalah file utama javascript BijiCMS yang memuat semua javascript di kontak.
+ * This is a main javascript file from BijiCMS which contains all javascript in contact.
  *
 */
 

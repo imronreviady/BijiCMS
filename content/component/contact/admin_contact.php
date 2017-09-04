@@ -1,11 +1,11 @@
 <?php
 /*
  *
- * - PopojiCMS Admin File
+ * - BijiCMS Admin File
  *
  * - File : admin_contact.php
  * - Version : 1.0
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
@@ -36,7 +36,7 @@ if (empty($_SESSION['namauser']) AND empty($_SESSION['passuser']) AND $_SESSION[
 	exit;
 }
 
-class contact extends PoCore
+class contact extends Core
 {
 
 	/**
@@ -59,20 +59,20 @@ class contact extends PoCore
 	public function index()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'contact', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		?>
 		<div class="block-content">
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->headTitle($GLOBALS['_']['component_name']);?>
+					<?=$this->html->headTitle($GLOBALS['_']['component_name']);?>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'route.php?mod=contact&act=multidelete', 'autocomplete' => 'off'));?>
-						<?=$this->pohtml->inputHidden(array('name' => 'totaldata', 'value' => '0', 'options' => 'id="totaldata"'));?>
+					<?=$this->html->formStart(array('method' => 'post', 'action' => 'route.php?mod=contact&act=multidelete', 'autocomplete' => 'off'));?>
+						<?=$this->html->inputHidden(array('name' => 'totaldata', 'value' => '0', 'options' => 'id="totaldata"'));?>
 						<?php
 							$columns = array(
 								array('title' => 'Id', 'options' => 'style="width:30px;"'),
@@ -82,12 +82,12 @@ class contact extends PoCore
 								array('title' => $GLOBALS['_']['contact_action'], 'options' => 'class="no-sort" style="width:120px;"')
 							);
 						?>
-						<?=$this->pohtml->createTable(array('id' => 'table-contact', 'class' => 'table table-striped table-bordered'), $columns, $tfoot = true);?>
-					<?=$this->pohtml->formEnd();?>
+						<?=$this->html->createTable(array('id' => 'table-contact', 'class' => 'table table-striped table-bordered'), $columns, $tfoot = true);?>
+					<?=$this->html->formEnd();?>
 				</div>
 			</div>
 		</div>
-		<?=$this->pohtml->dialogDelete('contact');?>
+		<?=$this->html->dialogDelete('contact');?>
 		<div id="viewdata" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -105,15 +105,15 @@ class contact extends PoCore
 		<div id="alertreply" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
-					<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'route.php?mod=contact&act=reply', 'autocomplete' => 'off'));?>
+					<?=$this->html->formStart(array('method' => 'post', 'action' => 'route.php?mod=contact&act=reply', 'autocomplete' => 'off'));?>
 						<div class="modal-header">
 							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 							<h4 id="modal-title"><?=$GLOBALS['_']['contact_dialog_title_2'];?></h4>
 						</div>
 						<div class="modal-body">
-							<?=$this->pohtml->inputHidden(array('name' => 'name', 'value' => '', 'options' => 'id="name"'));?>
-							<?=$this->pohtml->inputHidden(array('name' => 'email', 'value' => '', 'options' => 'id="email"'));?>
-							<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['contact_subject'], 'name' => 'subject', 'id' => 'subject', 'mandatory' => true, 'options' => 'required'));?>
+							<?=$this->html->inputHidden(array('name' => 'name', 'value' => '', 'options' => 'id="name"'));?>
+							<?=$this->html->inputHidden(array('name' => 'email', 'value' => '', 'options' => 'id="email"'));?>
+							<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['contact_subject'], 'name' => 'subject', 'id' => 'subject', 'mandatory' => true, 'options' => 'required'));?>
 							<div class="form-group">
 								<label for="message"><?=$GLOBALS['_']['contact_message'];?> <span class="text-danger">*</span></label>
 								<textarea id="message" name="message" class="form-control textarea-editor" style="width:100%; height:300px;"></textarea>
@@ -123,7 +123,7 @@ class contact extends PoCore
 							<button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-check"></i> <?=$GLOBALS['_']['action_5'];?></button>
 							<button type="button" class="btn btn-sm btn-danger" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i> <?=$GLOBALS['_']['action_6'];?></button>
 						</div>
-					<?=$this->pohtml->formEnd();?>
+					<?=$this->html->formEnd();?>
 				</div>
 			</div>
 		</div>
@@ -139,7 +139,7 @@ class contact extends PoCore
 	public function datatable()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'contact', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		$table = 'contact';
@@ -176,7 +176,7 @@ class contact extends PoCore
 			),
 			array('db' => 'status', 'dt' => '', 'field' => 'status')
 		);
-		echo json_encode(SSP::simple($_POST, $this->poconnect, $table, $primarykey, $columns));
+		echo json_encode(SSP::simple($_POST, $this->connect, $table, $primarykey, $columns));
 	}
 
 	/**
@@ -188,12 +188,12 @@ class contact extends PoCore
 	public function readdata()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'contact', 'update')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$current_contact = $this->podb->from('contact')
-				->where('id_contact', $this->postring->valid($_POST['id'], 'sql'))
+			$current_contact = $this->db->from('contact')
+				->where('id_contact', $this->string->valid($_POST['id'], 'sql'))
 				->limit(1)
 				->fetch();
 			if ($current_contact['status'] == 'Y') {
@@ -201,9 +201,9 @@ class contact extends PoCore
 			} else {
 				$status = 'Y';
 			}
-			$query_contact = $this->podb->update('contact')
+			$query_contact = $this->db->update('contact')
 				->set(array('status' => $status))
-				->where('id_contact', $this->postring->valid($_POST['id'], 'sql'));
+				->where('id_contact', $this->string->valid($_POST['id'], 'sql'));
 			$query_contact->execute();
 			echo $status;
 		}
@@ -218,12 +218,12 @@ class contact extends PoCore
 	public function viewdata()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'contact', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$current_contact = $this->podb->from('contact')
-				->where('id_contact', $this->postring->valid($_POST['id'], 'sql'))
+			$current_contact = $this->db->from('contact')
+				->where('id_contact', $this->string->valid($_POST['id'], 'sql'))
 				->limit(1)
 				->fetch();
 			echo $current_contact['message'];
@@ -239,48 +239,48 @@ class contact extends PoCore
 	public function reply()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'contact', 'create')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			if ($this->posetting[23]['value'] != 'SMTP') {
-				$from = $this->posetting[5]['value'];
-				$poemail = new PoEmail;
-				$send = $poemail
+			if ($this->setting[23]['value'] != 'SMTP') {
+				$from = $this->setting[5]['value'];
+				$email = new Email;
+				$send = $email
 					->setOption(
 						array(
 							messageType => 'html'
 						)
 					)
-					->to($this->postring->valid($_POST['email'], 'xss'))
-					->subject($this->postring->valid($_POST['subject'], 'xss'))
-					->message($this->postring->valid($_POST['message'], 'xss'))
+					->to($this->string->valid($_POST['email'], 'xss'))
+					->subject($this->string->valid($_POST['subject'], 'xss'))
+					->message($this->string->valid($_POST['message'], 'xss'))
 					->from($from)
 					->mail();
 				if ($send) {
-					$this->poflash->success($GLOBALS['_']['contact_message_1'], 'admin.php?mod=contact');
+					$this->flash->success($GLOBALS['_']['contact_message_1'], 'admin.php?mod=contact');
 				} else {
-					$this->poflash->error($GLOBALS['_']['contact_message_3'], 'admin.php?mod=contact');
+					$this->flash->error($GLOBALS['_']['contact_message_3'], 'admin.php?mod=contact');
 				}
 			} else {
-				$this->pomail->isSMTP();
-				$this->pomail->SMTPDebug = 0;
-				$this->pomail->Debugoutput = 'html';
-				$this->pomail->Host = $this->posetting[24]['value'];
-				$this->pomail->Port = $this->posetting[27]['value'];
-				$this->pomail->SMTPAuth = true;
-				$this->pomail->SMTPSecure = 'ssl';
-				$this->pomail->Username = $this->posetting[25]['value'];;
-				$this->pomail->Password = $this->posetting[26]['value'];
-				$this->pomail->setFrom($this->posetting[5]['value'], $this->posetting[0]['value']);
-				$this->pomail->addAddress($this->postring->valid($_POST['email'], 'xss'), $this->postring->valid($_POST['name'], 'xss'));
-				$this->pomail->IsHTML(true);
-				$this->pomail->Subject = $this->postring->valid($_POST['subject'], 'xss');
-				$this->pomail->Body = $_POST['message'];
-				if ($this->pomail->send()) {
-					$this->poflash->success($GLOBALS['_']['contact_message_1'], 'admin.php?mod=contact');
+				$this->mail->isSMTP();
+				$this->mail->SMTPDebug = 0;
+				$this->mail->Debugoutput = 'html';
+				$this->mail->Host = $this->setting[24]['value'];
+				$this->mail->Port = $this->setting[27]['value'];
+				$this->mail->SMTPAuth = true;
+				$this->mail->SMTPSecure = 'ssl';
+				$this->mail->Username = $this->setting[25]['value'];;
+				$this->mail->Password = $this->setting[26]['value'];
+				$this->mail->setFrom($this->setting[5]['value'], $this->setting[0]['value']);
+				$this->mail->addAddress($this->string->valid($_POST['email'], 'xss'), $this->string->valid($_POST['name'], 'xss'));
+				$this->mail->IsHTML(true);
+				$this->mail->Subject = $this->string->valid($_POST['subject'], 'xss');
+				$this->mail->Body = $_POST['message'];
+				if ($this->mail->send()) {
+					$this->flash->success($GLOBALS['_']['contact_message_1'], 'admin.php?mod=contact');
 				} else {
-					$this->poflash->error($GLOBALS['_']['contact_message_3'], 'admin.php?mod=contact');
+					$this->flash->error($GLOBALS['_']['contact_message_3'], 'admin.php?mod=contact');
 				}
 			}
 		}
@@ -295,13 +295,13 @@ class contact extends PoCore
 	public function delete()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'contact', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$query = $this->podb->deleteFrom('contact')->where('id_contact', $this->postring->valid($_POST['id'], 'sql'));
+			$query = $this->db->deleteFrom('contact')->where('id_contact', $this->string->valid($_POST['id'], 'sql'));
 			$query->execute();
-			$this->poflash->success($GLOBALS['_']['contact_message_2'], 'admin.php?mod=contact');
+			$this->flash->success($GLOBALS['_']['contact_message_2'], 'admin.php?mod=contact');
 		}
 	}
 
@@ -314,20 +314,20 @@ class contact extends PoCore
 	public function multidelete()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'contact', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$totaldata = $this->postring->valid($_POST['totaldata'], 'xss');
+			$totaldata = $this->string->valid($_POST['totaldata'], 'xss');
 			if ($totaldata != "0") {
 				$items = $_POST['item'];
 				foreach($items as $item){
-					$query = $this->podb->deleteFrom('contact')->where('id_contact', $this->postring->valid($item['deldata'], 'sql'));
+					$query = $this->db->deleteFrom('contact')->where('id_contact', $this->string->valid($item['deldata'], 'sql'));
 					$query->execute();
 				}
-				$this->poflash->success($GLOBALS['_']['contact_message_2'], 'admin.php?mod=contact');
+				$this->flash->success($GLOBALS['_']['contact_message_2'], 'admin.php?mod=contact');
 			} else {
-				$this->poflash->error($GLOBALS['_']['contact_message_4'], 'admin.php?mod=contact');
+				$this->flash->error($GLOBALS['_']['contact_message_4'], 'admin.php?mod=contact');
 			}
 		}
 	}
