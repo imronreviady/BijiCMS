@@ -1,11 +1,11 @@
 <?php
 /*
  *
- * - PopojiCMS Front End File
+ * - BijiCMS Front End File
  *
  * - File : comment.php
  * - Version : 1.1
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
@@ -24,23 +24,23 @@ $router->match('GET|POST', '/comment', function() use ($core, $templates) {
 	$lang = $core->setlang('comment', WEB_LANG);
 	if (!empty($_POST)) {
 		require_once(DIR_INC.'/core/vendor/recaptcha/recaptchalib.php');
-		$secret = $core->posetting[22]['value'];
-		$recaptcha = new PoReCaptcha($secret);
-		$post = $core->podb->from('post')
+		$secret = $core->setting[22]['value'];
+		$recaptcha = new ReCaptcha($secret);
+		$post = $core->db->from('post')
 			->select(array('post_description.title', 'post_description.content'))
 			->leftJoin('post_description ON post_description.id_post = post.id_post')
 			->where('post.id_post', $_POST['id'])
 			->where('post_description.id_language', WEB_LANG_ID)
 			->limit(1)
 			->fetch();
-		$permalink = $core->postring->permalink(rtrim(BASE_URL, '/'), $post);
+		$permalink = $core->string->permalink(rtrim(BASE_URL, '/'), $post);
 		if (!empty($_POST["g-recaptcha-response"])) {
 			$resp = $recaptcha->verifyResponse(
 				$_SERVER["REMOTE_ADDR"],
 				$_POST["g-recaptcha-response"]
 			);
 			if ($resp != null && $resp->success) {
-				$core->poval->validation_rules(array(
+				$core->val->validation_rules(array(
 					'id' => 'required|integer',
 					'id_parent' => 'required|integer',
 					'name' => 'required|max_len,100|min_len,3',
@@ -49,7 +49,7 @@ $router->match('GET|POST', '/comment', function() use ($core, $templates) {
 					'comment' => 'required|min_len,10',
 					'seotitle' => 'required'
 				));
-				$core->poval->filter_rules(array(
+				$core->val->filter_rules(array(
 					'id' => 'trim',
 					'id_parent' => 'trim',
 					'name' => 'trim|sanitize_string',
@@ -58,11 +58,11 @@ $router->match('GET|POST', '/comment', function() use ($core, $templates) {
 					'comment' => 'trim|sanitize_string|basic_tags',
 					'seotitle' => 'trim'
 				));
-				$validated_data = $core->poval->run($_POST);
+				$validated_data = $core->val->run($_POST);
 				if ($validated_data === false) {
-					$core->poflash->error($lang['front_comment_error_3'], $permalink.'#comments');
+					$core->flash->error($lang['front_comment_error_3'], $permalink.'#comments');
 				} else {
-					if ($core->posetting[18]['value'] == 'Y') {
+					if ($core->setting[18]['value'] == 'Y') {
 						$active = 'Y';
 					} else {
 						$active = 'N';
@@ -78,16 +78,16 @@ $router->match('GET|POST', '/comment', function() use ($core, $templates) {
 						'time' => date('h:i:s'),
 						'active' => $active
 					);
-					$query = $core->podb->insertInto('comment')->values($data);
+					$query = $core->db->insertInto('comment')->values($data);
 					$query->execute();
 					unset($_POST);
-					$core->poflash->success($lang['front_comment_success'], $permalink.'#comments');
+					$core->flash->success($lang['front_comment_success'], $permalink.'#comments');
 				}
 			} else {
-				$core->poflash->error($lang['front_comment_error_2'], $permalink.'#comments');
+				$core->flash->error($lang['front_comment_error_2'], $permalink.'#comments');
 			}
 		} else {
-			$core->poflash->error($lang['front_comment_error_1'], $permalink.'#comments');
+			$core->flash->error($lang['front_comment_error_1'], $permalink.'#comments');
 		}
 	} else {
 		header('location:'.BASE_URL.'/404.php');

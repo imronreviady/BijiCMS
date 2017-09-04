@@ -1,11 +1,11 @@
 <?php
 /*
  *
- * - PopojiCMS Admin File
+ * - BijiCMS Admin File
  *
  * - File : admin_comment.php
  * - Version : 1.1
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
@@ -36,7 +36,7 @@ if (empty($_SESSION['namauser']) AND empty($_SESSION['passuser']) AND $_SESSION[
 	exit;
 }
 
-class Comment extends PoCore
+class Comment extends Core
 {
 
 	/**
@@ -59,20 +59,20 @@ class Comment extends PoCore
 	public function index()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'comment', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		?>
 		<div class="block-content">
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->headTitle($GLOBALS['_']['component_name']);?>
+					<?=$this->html->headTitle($GLOBALS['_']['component_name']);?>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'route.php?mod=comment&act=multidelete', 'autocomplete' => 'off'));?>
-						<?=$this->pohtml->inputHidden(array('name' => 'totaldata', 'value' => '0', 'options' => 'id="totaldata"'));?>
+					<?=$this->html->formStart(array('method' => 'post', 'action' => 'route.php?mod=comment&act=multidelete', 'autocomplete' => 'off'));?>
+						<?=$this->html->inputHidden(array('name' => 'totaldata', 'value' => '0', 'options' => 'id="totaldata"'));?>
 						<?php
 							$columns = array(
 								array('title' => 'Id', 'options' => 'style="width:30px;"'),
@@ -82,12 +82,12 @@ class Comment extends PoCore
 								array('title' => $GLOBALS['_']['comment_action'], 'options' => 'class="no-sort" style="width:150px;"')
 							);
 						?>
-						<?=$this->pohtml->createTable(array('id' => 'table-comment', 'class' => 'table table-striped table-bordered'), $columns, $tfoot = true);?>
-					<?=$this->pohtml->formEnd();?>
+						<?=$this->html->createTable(array('id' => 'table-comment', 'class' => 'table table-striped table-bordered'), $columns, $tfoot = true);?>
+					<?=$this->html->formEnd();?>
 				</div>
 			</div>
 		</div>
-		<?=$this->pohtml->dialogDelete('comment');?>
+		<?=$this->html->dialogDelete('comment');?>
 		<div id="viewdata" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -105,14 +105,14 @@ class Comment extends PoCore
 		<div id="alertreply" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
-					<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'route.php?mod=comment&act=reply', 'autocomplete' => 'off'));?>
+					<?=$this->html->formStart(array('method' => 'post', 'action' => 'route.php?mod=comment&act=reply', 'autocomplete' => 'off'));?>
 						<div class="modal-header">
 							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 							<h4 id="modal-title"><?=$GLOBALS['_']['comment_dialog_title_2'];?></h4>
 						</div>
 						<div class="modal-body">
-							<?=$this->pohtml->inputHidden(array('name' => 'id_parent', 'value' => '', 'options' => 'id="id_parent"'));?>
-							<?=$this->pohtml->inputHidden(array('name' => 'id_post', 'value' => '', 'options' => 'id="id_post"'));?>
+							<?=$this->html->inputHidden(array('name' => 'id_parent', 'value' => '', 'options' => 'id="id_parent"'));?>
+							<?=$this->html->inputHidden(array('name' => 'id_post', 'value' => '', 'options' => 'id="id_post"'));?>
 							<div class="form-group" style="border-bottom:none; padding-bottom:0px;">
 								<label for="comment"><?=$GLOBALS['_']['comment_name'];?> <span class="text-danger">*</span></label>
 								<textarea id="comment" name="comment" class="form-control text-comment" style="width:100%; height:100px;" required></textarea>
@@ -122,7 +122,7 @@ class Comment extends PoCore
 							<button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-check"></i> <?=$GLOBALS['_']['action_5'];?></button>
 							<button type="button" class="btn btn-sm btn-danger" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i> <?=$GLOBALS['_']['action_6'];?></button>
 						</div>
-					<?=$this->pohtml->formEnd();?>
+					<?=$this->html->formEnd();?>
 				</div>
 			</div>
 		</div>
@@ -138,7 +138,7 @@ class Comment extends PoCore
 	public function datatable()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'comment', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		$table = 'comment';
@@ -156,8 +156,8 @@ class Comment extends PoCore
 			array('db' => 'c.name', 'dt' => '2', 'field' => 'name',
 				'formatter' => function($d, $row, $i){
 					return $d."<br />\n
-						<span style='font-size:12px;'>".$row['email']." - <a href='".$this->postring->addhttp($row['url'])."' target='_blank'>Website</a></span><br />\n
-						Post : <a href='".$this->postring->permalink(rtrim(WEB_URL, '/'), array('id_post' => $row['id_post'], 'seotitle' => $row['seotitle'], 'date' => $row['date']))."' target='_blank'>".$row['title']."</a>\n
+						<span style='font-size:12px;'>".$row['email']." - <a href='".$this->string->addhttp($row['url'])."' target='_blank'>Website</a></span><br />\n
+						Post : <a href='".$this->string->permalink(rtrim(WEB_URL, '/'), array('id_post' => $row['id_post'], 'seotitle' => $row['seotitle'], 'date' => $row['date']))."' target='_blank'>".$row['title']."</a>\n
 					\n";
 				}
 			),
@@ -208,7 +208,7 @@ class Comment extends PoCore
 			array('db' => 'pd.title', 'dt' => '', 'field' => 'title')
 		);
 		$joinquery = "FROM comment AS c JOIN post AS p ON (p.id_post = c.id_post) JOIN post_description AS pd ON (pd.id_post = c.id_post AND pd.id_language = '1')";
-		echo json_encode(SSP::simple($_POST, $this->poconnect, $table, $primarykey, $columns, $joinquery));
+		echo json_encode(SSP::simple($_POST, $this->connect, $table, $primarykey, $columns, $joinquery));
 	}
 
 	/**
@@ -220,12 +220,12 @@ class Comment extends PoCore
 	public function publishdata()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'comment', 'update')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$current_comment = $this->podb->from('comment')
-				->where('id_comment', $this->postring->valid($_POST['id'], 'sql'))
+			$current_comment = $this->db->from('comment')
+				->where('id_comment', $this->string->valid($_POST['id'], 'sql'))
 				->limit(1)
 				->fetch();
 			if ($current_comment['active'] == 'Y') {
@@ -233,9 +233,9 @@ class Comment extends PoCore
 			} else {
 				$active = 'Y';
 			}
-			$query_comment = $this->podb->update('comment')
+			$query_comment = $this->db->update('comment')
 				->set(array('active' => $active))
-				->where('id_comment', $this->postring->valid($_POST['id'], 'sql'));
+				->where('id_comment', $this->string->valid($_POST['id'], 'sql'));
 			$query_comment->execute();
 			echo $active;
 		}
@@ -250,12 +250,12 @@ class Comment extends PoCore
 	public function readdata()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'comment', 'update')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$current_comment = $this->podb->from('comment')
-				->where('id_comment', $this->postring->valid($_POST['id'], 'sql'))
+			$current_comment = $this->db->from('comment')
+				->where('id_comment', $this->string->valid($_POST['id'], 'sql'))
 				->limit(1)
 				->fetch();
 			if ($current_comment['status'] == 'Y') {
@@ -263,9 +263,9 @@ class Comment extends PoCore
 			} else {
 				$status = 'Y';
 			}
-			$query_comment = $this->podb->update('comment')
+			$query_comment = $this->db->update('comment')
 				->set(array('status' => $status))
-				->where('id_comment', $this->postring->valid($_POST['id'], 'sql'));
+				->where('id_comment', $this->string->valid($_POST['id'], 'sql'));
 			$query_comment->execute();
 			echo $status;
 		}
@@ -280,12 +280,12 @@ class Comment extends PoCore
 	public function viewdata()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'comment', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$current_comment = $this->podb->from('comment')
-				->where('id_comment', $this->postring->valid($_POST['id'], 'sql'))
+			$current_comment = $this->db->from('comment')
+				->where('id_comment', $this->string->valid($_POST['id'], 'sql'))
 				->limit(1)
 				->fetch();
 			echo $current_comment['comment'];
@@ -301,27 +301,27 @@ class Comment extends PoCore
 	public function reply()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'comment', 'create')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
 			$data = array(
-				'id_parent' => $this->postring->valid($_POST['id_parent'], 'sql'),
-				'id_post' => $this->postring->valid($_POST['id_post'], 'sql'),
+				'id_parent' => $this->string->valid($_POST['id_parent'], 'sql'),
+				'id_post' => $this->string->valid($_POST['id_post'], 'sql'),
 				'name' => $_SESSION['namalengkap'],
-				'email' => $this->posetting[5]['value'],
+				'email' => $this->setting[5]['value'],
 				'url' => WEB_URL,
-				'comment' => $this->postring->valid($_POST['comment'], 'xss'),
+				'comment' => $this->string->valid($_POST['comment'], 'xss'),
 				'date' => date('Y-m-d'),
 				'time' => date('h:m:s'),
 				'active' => 'Y',
 				'status' => 'Y'
 			);
-			$query_comment = $this->podb->insertInto('comment')->values($data);
+			$query_comment = $this->db->insertInto('comment')->values($data);
 			if ($query_comment->execute()) {
-				$this->poflash->success($GLOBALS['_']['comment_message_1'], 'admin.php?mod=comment');
+				$this->flash->success($GLOBALS['_']['comment_message_1'], 'admin.php?mod=comment');
 			} else {
-				$this->poflash->error($GLOBALS['_']['comment_message_3'], 'admin.php?mod=comment');
+				$this->flash->error($GLOBALS['_']['comment_message_3'], 'admin.php?mod=comment');
 			}
 		}
 	}
@@ -335,13 +335,13 @@ class Comment extends PoCore
 	public function delete()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'comment', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$query = $this->podb->deleteFrom('comment')->where('id_comment', $this->postring->valid($_POST['id'], 'sql'));
+			$query = $this->db->deleteFrom('comment')->where('id_comment', $this->string->valid($_POST['id'], 'sql'));
 			$query->execute();
-			$this->poflash->success($GLOBALS['_']['comment_message_2'], 'admin.php?mod=comment');
+			$this->flash->success($GLOBALS['_']['comment_message_2'], 'admin.php?mod=comment');
 		}
 	}
 
@@ -354,20 +354,20 @@ class Comment extends PoCore
 	public function multidelete()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'comment', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$totaldata = $this->postring->valid($_POST['totaldata'], 'xss');
+			$totaldata = $this->string->valid($_POST['totaldata'], 'xss');
 			if ($totaldata != "0") {
 				$items = $_POST['item'];
 				foreach($items as $item){
-					$query = $this->podb->deleteFrom('comment')->where('id_comment', $this->postring->valid($item['deldata'], 'sql'));
+					$query = $this->db->deleteFrom('comment')->where('id_comment', $this->string->valid($item['deldata'], 'sql'));
 					$query->execute();
 				}
-				$this->poflash->success($GLOBALS['_']['comment_message_2'], 'admin.php?mod=comment');
+				$this->flash->success($GLOBALS['_']['comment_message_2'], 'admin.php?mod=comment');
 			} else {
-				$this->poflash->error($GLOBALS['_']['comment_message_4'], 'admin.php?mod=comment');
+				$this->flash->error($GLOBALS['_']['comment_message_4'], 'admin.php?mod=comment');
 			}
 		}
 	}
