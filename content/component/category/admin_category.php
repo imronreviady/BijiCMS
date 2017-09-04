@@ -339,14 +339,14 @@ class Category extends Core
 										->where('category.id_category', $current_category['id_parent'])
 										->where('category_description.id_language', '1')
 										->fetch();
-									$cats = $this->podb->from('category')
+									$cats = $this->db->from('category')
 										->select('category_description.title')
 										->leftJoin('category_description ON category_description.id_category = category.id_category')
 										->where('category.id_parent', '0')
 										->where('category_description.id_language', '1')
 										->orderBy('category.id_category ASC')
 										->fetchAll();
-									echo $this->pohtml->inputSelectNoOpt(array('id' => 'id_parent', 'label' => $GLOBALS['_']['category_parent'], 'name' => 'id_parent', 'mandatory' => true));
+									echo $this->html->inputSelectNoOpt(array('id' => 'id_parent', 'label' => $GLOBALS['_']['category_parent'], 'name' => 'id_parent', 'mandatory' => true));
 								?>
 									<?php if (!empty($selcats)) { ?>
 									<option value="<?=$selcats['id_category'];?>"><?=$selcats['title'];?></option>
@@ -356,11 +356,11 @@ class Category extends Core
 									foreach($cats as $cat){
 										echo $this->generate_select($cat['id_category'], $cat['title']);
 									}
-									echo $this->pohtml->inputSelectNoOptEnd();
+									echo $this->html->inputSelectNoOptEnd();
 									?>
 							</div>
 							<div class="col-md-6">
-								<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['category_picture'], 'name' => 'picture', 'id' => 'picture', 'value' => $current_category['picture']), $inputgroup = true, $inputgroupopt = array('href' => '../'.DIR_INC.'/js/filemanager/dialog.php?type=1&field_id=picture', 'id' => 'browse-file', 'class' => 'btn-success', 'options' => '', 'title' => $GLOBALS['_']['action_7'].' '.$GLOBALS['_']['category_picture']));?>
+								<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['category_picture'], 'name' => 'picture', 'id' => 'picture', 'value' => $current_category['picture']), $inputgroup = true, $inputgroupopt = array('href' => '../'.DIR_INC.'/js/filemanager/dialog.php?type=1&field_id=picture', 'id' => 'browse-file', 'class' => 'btn-success', 'options' => '', 'title' => $GLOBALS['_']['action_7'].' '.$GLOBALS['_']['category_picture']));?>
 							</div>
 						</div>
 						<div class="row">
@@ -368,7 +368,7 @@ class Category extends Core
 								<?php
 									$notab = 1;
 									$noctab = 1;
-									$langs = $this->podb->from('language')->where('active', 'Y')->orderBy('id_language ASC')->fetchAll();
+									$langs = $this->db->from('language')->where('active', 'Y')->orderBy('id_language ASC')->fetchAll();
 								?>
 								<ul class="nav nav-tabs">
 									<?php foreach($langs as $lang) { ?>
@@ -379,13 +379,13 @@ class Category extends Core
 									<?php foreach($langs as $lang) { ?>
 									<div class="tab-pane <?php echo ($noctab == '1' ? 'active' : ''); ?>" id="tab-content-<?=$lang['id_language'];?>">
 										<?php
-										$catlang = $this->podb->from('category_description')
+										$catlang = $this->db->from('category_description')
 											->where('category_description.id_category', $current_category['id_category'])
 											->where('category_description.id_language', $lang['id_language'])
 											->fetch();
 										?>
-										<?=$this->pohtml->inputHidden(array('name' => 'category['.$lang['id_language'].'][id]', 'value' => $catlang['id_category_description']));?>
-										<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['category_title_2'], 'name' => 'category['.$lang['id_language'].'][title]', 'id' => 'title-'.$lang['id_language'], 'value' => $catlang['title'], 'mandatory' => true, 'options' => 'required'));?>
+										<?=$this->html->inputHidden(array('name' => 'category['.$lang['id_language'].'][id]', 'value' => $catlang['id_category_description']));?>
+										<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['category_title_2'], 'name' => 'category['.$lang['id_language'].'][title]', 'id' => 'title-'.$lang['id_language'], 'value' => $catlang['title'], 'mandatory' => true, 'options' => 'required'));?>
 									</div>
 									<?php $noctab++;} ?>
 								</div>
@@ -395,19 +395,19 @@ class Category extends Core
 											array('name' => 'active', 'id' => 'active', 'value' => 'Y', 'options' => '', 'title' => 'Y'),
 											array('name' => 'active', 'id' => 'active', 'value' => 'N', 'options' => 'checked', 'title' => 'N')
 										);
-										echo $this->pohtml->inputRadio(array('label' => $GLOBALS['_']['category_active'], 'mandatory' => true), $radioitem, $inline = true);
+										echo $this->html->inputRadio(array('label' => $GLOBALS['_']['category_active'], 'mandatory' => true), $radioitem, $inline = true);
 									} else {
 										$radioitem = array(
 											array('name' => 'active', 'id' => 'active', 'value' => 'Y', 'options' => 'checked', 'title' => 'Y'),
 											array('name' => 'active', 'id' => 'active', 'value' => 'N', 'options' => '', 'title' => 'N')
 										);
-										echo $this->pohtml->inputRadio(array('label' => $GLOBALS['_']['category_active'], 'mandatory' => true), $radioitem, $inline = true);
+										echo $this->html->inputRadio(array('label' => $GLOBALS['_']['category_active'], 'mandatory' => true), $radioitem, $inline = true);
 									}
 								?>
-								<?=$this->pohtml->formAction();?>
+								<?=$this->html->formAction();?>
 							</div>
 						</div>
-					<?=$this->pohtml->formEnd();?>
+					<?=$this->html->formEnd();?>
 				</div>
 			</div>
 		</div>
@@ -423,15 +423,15 @@ class Category extends Core
 	public function delete()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'category', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$query_desc = $this->podb->deleteFrom('category_description')->where('id_category', $this->postring->valid($_POST['id'], 'sql'));
+			$query_desc = $this->db->deleteFrom('category_description')->where('id_category', $this->string->valid($_POST['id'], 'sql'));
 			$query_desc->execute();
-			$query_cat = $this->podb->deleteFrom('category')->where('id_category', $this->postring->valid($_POST['id'], 'sql'));
+			$query_cat = $this->db->deleteFrom('category')->where('id_category', $this->string->valid($_POST['id'], 'sql'));
 			$query_cat->execute();
-			$this->poflash->success($GLOBALS['_']['category_message_3'], 'admin.php?mod=category');
+			$this->flash->success($GLOBALS['_']['category_message_3'], 'admin.php?mod=category');
 		}
 	}
 
@@ -444,22 +444,22 @@ class Category extends Core
 	public function multidelete()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'category', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$totaldata = $this->postring->valid($_POST['totaldata'], 'xss');
+			$totaldata = $this->string->valid($_POST['totaldata'], 'xss');
 			if ($totaldata != "0") {
 				$items = $_POST['item'];
 				foreach($items as $item){
-					$query_desc = $this->podb->deleteFrom('category_description')->where('id_category', $this->postring->valid($item['deldata'], 'sql'));
+					$query_desc = $this->db->deleteFrom('category_description')->where('id_category', $this->string->valid($item['deldata'], 'sql'));
 					$query_desc->execute();
-					$query_cat = $this->podb->deleteFrom('category')->where('id_category', $this->postring->valid($item['deldata'], 'sql'));
+					$query_cat = $this->db->deleteFrom('category')->where('id_category', $this->string->valid($item['deldata'], 'sql'));
 					$query_cat->execute();
 				}
-				$this->poflash->success($GLOBALS['_']['category_message_3'], 'admin.php?mod=category');
+				$this->flash->success($GLOBALS['_']['category_message_3'], 'admin.php?mod=category');
 			} else {
-				$this->poflash->error($GLOBALS['_']['category_message_6'], 'admin.php?mod=category');
+				$this->flash->error($GLOBALS['_']['category_message_6'], 'admin.php?mod=category');
 			}
 		}
 	}
@@ -488,14 +488,14 @@ class Category extends Core
 		$i = 1;
 		$html = "";
 		$indent = str_repeat("\t\t", $i);
-		$catfuns = $this->podb->from('category')
+		$catfuns = $this->db->from('category')
 			->select('category_description.title')
 			->leftJoin('category_description ON category_description.id_category = category.id_category')
 			->where('category.id_parent', $id)
 			->where('category_description.id_language', '1')
 			->orderBy('category.id_category ASC')
 			->fetchAll();
-		$catfunnum = $this->podb->from('category')->where('id_parent', $id)->orderBy('id_category ASC')->count();
+		$catfunnum = $this->db->from('category')->where('id_parent', $id)->orderBy('id_category ASC')->count();
 		if ($catfunnum > 0) {
 			$html .= "\n\t".$indent."";
 			$i++;
