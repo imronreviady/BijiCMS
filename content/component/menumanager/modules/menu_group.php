@@ -1,11 +1,11 @@
 <?php
 /*
  *
- * - PopojiCMS Admin File
+ * - BijiCMS Admin File
  *
  * - File : menu_group.php
  * - Version : 1.0
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
@@ -28,9 +28,9 @@ class Menu_group extends Menumanager
 				MENUGROUP_TITLE => trim($_POST['title'])
 			);
 			if (!empty($data[MENUGROUP_TITLE])) {
-				$query = $this->podb->insertInto(MENUGROUP_TABLE)->values($data);
+				$query = $this->db->insertInto(MENUGROUP_TABLE)->values($data);
 				if ($query->execute()) {
-					$sql = $this->podb->from(MENUGROUP_TABLE)
+					$sql = $this->db->from(MENUGROUP_TABLE)
 						->limit(1)
 						->orderBy(MENUGROUP_ID.' DESC')
 						->fetch();
@@ -60,7 +60,7 @@ class Menu_group extends Menumanager
 			$data = array(
 				MENUGROUP_TITLE => trim($_POST['title'])
 			);
-			$query = $this->podb->update(MENUGROUP_TABLE)
+			$query = $this->db->update(MENUGROUP_TABLE)
 				->set($data)
 				->where(MENUGROUP_ID, $id);
 			if ($query->execute()) {
@@ -82,9 +82,9 @@ class Menu_group extends Menumanager
 				$response['success'] = false;
 				$response['msg'] = 'Cannot delete Group ID = 1';
 			} else {
-				$query = $this->podb->deleteFrom(MENUGROUP_TABLE)->where(MENUGROUP_ID, $id);
+				$query = $this->db->deleteFrom(MENUGROUP_TABLE)->where(MENUGROUP_ID, $id);
 				if ($query->execute()) {
-					$query = $this->podb->deleteFrom(MENU_TABLE)->where(MENU_GROUP, array($id));
+					$query = $this->db->deleteFrom(MENU_TABLE)->where(MENU_GROUP, array($id));
 					$query->execute();
 					$response['success'] = true;
 				} else {

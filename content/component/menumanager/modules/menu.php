@@ -1,11 +1,11 @@
 <?php
 /*
  *
- * - PopojiCMS Admin File
+ * - BijiCMS Admin File
  *
  * - File : menu.php
  * - Version : 1.0
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
@@ -31,7 +31,7 @@ class Menu extends Menumanager
 			$menu = $this->get_menu($group_id);
 			$data['menu_ul'] = '<ul id="easymm"></ul>';
 			if ($menu) {
-				include_once '../po-content/component/menumanager/includes/tree.php';
+				include_once '../content/component/menumanager/includes/tree.php';
 				$tree = new MenuTree;
 				foreach ($menu as $row) {
 					$tree->add_row(
@@ -51,7 +51,7 @@ class Menu extends Menumanager
 			$menu = $this->get_menu('1');
 			$data['menu_ul'] = '<ul id="easymm"></ul>';
 			if ($menu) {
-				include '../po-content/component/menumanager/includes/tree.php';
+				include '../content/component/menumanager/includes/tree.php';
 				$tree = new MenuTree;
 				foreach ($menu as $row) {
 					$tree->add_row(
@@ -87,9 +87,9 @@ class Menu extends Menumanager
 				MENU_POSITION => $this->get_last_position($_POST['group_id']) + 1
 			);
 			if (!empty($data[MENU_TITLE])) {
-				$query = $this->podb->insertInto(MENU_TABLE)->values($data);
+				$query = $this->db->insertInto(MENU_TABLE)->values($data);
 				if ($query->execute()) {
-					$sql = $this->podb->from(MENU_TABLE)
+					$sql = $this->db->from(MENU_TABLE)
 						->limit(1)
 						->orderBy(MENU_ID.' DESC')
 						->fetch();
@@ -139,7 +139,7 @@ class Menu extends Menumanager
 				MENU_TARGET => $_POST['target']
 			);
 			if (!empty($data[MENU_TITLE])) {
-				$query = $this->podb->update(MENU_TABLE)
+				$query = $this->db->update(MENU_TABLE)
 					->set($data)
 					->where(MENU_ID, $data[MENU_ID]);
 				if ($query->execute()) {
@@ -174,9 +174,9 @@ class Menu extends Menumanager
 			$this->get_descendants($id);
 			if (!empty($this->ids)) {
 				$this->ids[] = $id;
-				$query = $this->podb->deleteFrom(MENU_TABLE)->where(MENU_ID, $this->ids);
+				$query = $this->db->deleteFrom(MENU_TABLE)->where(MENU_ID, $this->ids);
 			} else {
-				$query = $this->podb->deleteFrom(MENU_TABLE)->where(MENU_ID, array($id));
+				$query = $this->db->deleteFrom(MENU_TABLE)->where(MENU_ID, array($id));
 			}
 			if ($query->execute()) {
 				$response['success'] = true;
@@ -210,7 +210,7 @@ class Menu extends Menumanager
 				MENU_PARENT => $parent,
 				MENU_POSITION => $i
 			);
-			$query = $this->podb->update(MENU_TABLE)
+			$query = $this->db->update(MENU_TABLE)
 				->set($data)
 				->where(MENU_ID, $id);
 			$query->execute();
@@ -229,7 +229,7 @@ class Menu extends Menumanager
 	*/
 	private function get_menu($group_id)
 	{
-		$sqls = $this->podb->from(MENU_TABLE)
+		$sqls = $this->db->from(MENU_TABLE)
 			->where(MENU_GROUP, $group_id)
 			->orderBy(array(MENU_PARENT, MENU_POSITION))
 			->fetchAll();
@@ -244,7 +244,7 @@ class Menu extends Menumanager
 	*/
 	private function get_row($id)
 	{
-		$sqls = $this->podb->from(MENU_TABLE)
+		$sqls = $this->db->from(MENU_TABLE)
 			->where(MENU_ID, $id)
 			->fetch();
 		return $sqls;
@@ -252,7 +252,7 @@ class Menu extends Menumanager
 
 	private function num_row($id)
 	{
-		$sqls = $this->podb->from(MENUGROUP_TABLE)
+		$sqls = $this->db->from(MENUGROUP_TABLE)
 			->where(MENUGROUP_ID, $id)
 			->count();
 		return $sqls;
@@ -267,10 +267,10 @@ class Menu extends Menumanager
 	*/
 	private function get_descendants($id)
 	{
-		$sqls = $this->podb->from(MENU_TABLE)
+		$sqls = $this->db->from(MENU_TABLE)
 			->where(MENU_PARENT, $id)
 			->fetchAll();
-		$csqls = $this->podb->from(MENU_TABLE)
+		$csqls = $this->db->from(MENU_TABLE)
 			->where(MENU_PARENT, $id)
 			->count();
 		if ($csqls > 0) {
@@ -289,7 +289,7 @@ class Menu extends Menumanager
 	*/
 	private function get_last_position($group_id)
 	{
-		$sqls = $this->podb->from(MENU_TABLE)
+		$sqls = $this->db->from(MENU_TABLE)
 			->select(array('MAX('.MENU_POSITION.')'))
 			->where(MENU_GROUP, $group_id)
 			->limit(1)
@@ -305,7 +305,7 @@ class Menu extends Menumanager
 	*/
 	private function get_menu_groups()
 	{
-		$sqls = $this->podb->from(MENUGROUP_TABLE)
+		$sqls = $this->db->from(MENUGROUP_TABLE)
 			->select(array(MENUGROUP_ID, MENUGROUP_TITLE))
 			->fetchAll();
 		$data = array();
@@ -323,7 +323,7 @@ class Menu extends Menumanager
 	*/
 	private function get_menu_group_title($group_id)
 	{
-		$sqls = $this->podb->from(MENUGROUP_TABLE)
+		$sqls = $this->db->from(MENUGROUP_TABLE)
 			->select(array(MENUGROUP_TITLE))
 			->where(MENUGROUP_ID, $group_id)
 			->limit(1)

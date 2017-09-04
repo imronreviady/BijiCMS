@@ -1,11 +1,11 @@
 <?php
 /*
  *
- * - PopojiCMS Admin File
+ * - BijiCMS Admin File
  *
  * - File : config.php
  * - Version : 1.0
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *

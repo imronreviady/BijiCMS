@@ -1,11 +1,11 @@
 <?php
 /*
  *
- * - PopojiCMS Admin File
+ * - BijiCMS Admin File
  *
  * - File : admin_home.php
  * - Version : 1.0
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
@@ -45,7 +45,7 @@ if (empty($_SESSION['namauser']) AND empty($_SESSION['passuser']) AND $_SESSION[
 include_once '../'.DIR_CON.'/component/menumanager/includes/config.php';
 include_once '../'.DIR_CON.'/component/menumanager/includes/functions.php';
 
-class Menumanager extends PoCore
+class Menumanager extends Core
 {
 
 	/**
@@ -87,10 +87,10 @@ class Menumanager extends PoCore
 	public function index()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'menumanager', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
-		$menus = $this->podb->from('menu_group')->count();
+		$menus = $this->db->from('menu_group')->count();
 		if ($menus != "0"){
 			$controller = 'menu';
 			$method = 'menumanager';
@@ -121,7 +121,7 @@ class Menumanager extends PoCore
 				'id' => '1',
 				'title' => 'Main Menu'
 			);
-			$query = $this->podb->insertInto(MENUGROUP_TABLE)->values($data);
+			$query = $this->db->insertInto(MENUGROUP_TABLE)->values($data);
 			$query->execute();
 			$controller = 'menu';
 			$method = 'menumanager';
@@ -159,7 +159,7 @@ class Menumanager extends PoCore
 	public function addmenu()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'menumanager', 'create')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		include_once '../'.DIR_CON.'/component/menumanager/modules/menu.php';
@@ -176,7 +176,7 @@ class Menumanager extends PoCore
 	public function editmenu()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'menumanager', 'update')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		include_once '../'.DIR_CON.'/component/menumanager/modules/menu.php';
@@ -193,7 +193,7 @@ class Menumanager extends PoCore
 	public function savemenu()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'menumanager', 'create')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		include_once '../'.DIR_CON.'/component/menumanager/modules/menu.php';
@@ -210,7 +210,7 @@ class Menumanager extends PoCore
 	public function savepositionmenu()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'menumanager', 'update')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		include_once '../'.DIR_CON.'/component/menumanager/modules/menu.php';
@@ -227,7 +227,7 @@ class Menumanager extends PoCore
 	public function deletemenu()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'menumanager', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		include_once '../'.DIR_CON.'/component/menumanager/modules/menu.php';
@@ -244,7 +244,7 @@ class Menumanager extends PoCore
 	public function addmenugroup()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'menumanager', 'create')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		include_once '../'.DIR_CON.'/component/menumanager/modules/menu_group.php';
@@ -261,7 +261,7 @@ class Menumanager extends PoCore
 	public function editmenugroup()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'menumanager', 'update')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		include_once '../'.DIR_CON.'/component/menumanager/modules/menu_group.php';
@@ -278,7 +278,7 @@ class Menumanager extends PoCore
 	public function deletemenugroup()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'menumanager', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		include_once '../'.DIR_CON.'/component/menumanager/modules/menu_group.php';
