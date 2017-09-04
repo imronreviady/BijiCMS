@@ -1,11 +1,11 @@
 <?php
 /*
  *
- * - PopojiCMS Admin File
+ * - BijiCMS Admin File
  *
  * - File : admin_component.php
  * - Version : 1.0
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
@@ -36,7 +36,7 @@ if (empty($_SESSION['namauser']) AND empty($_SESSION['passuser']) AND $_SESSION[
 	exit;
 }
 
-class Component extends PoCore
+class Component extends Core
 {
 
 	/**
@@ -59,20 +59,20 @@ class Component extends PoCore
 	public function index()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'component', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		?>
 		<div class="block-content">
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->headTitle($GLOBALS['_']['component_name']);?>
+					<?=$this->html->headTitle($GLOBALS['_']['component_name']);?>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'route.php?mod=component&act=multidelete', 'autocomplete' => 'off'));?>
-						<?=$this->pohtml->inputHidden(array('name' => 'totaldata', 'value' => '0', 'options' => 'id="totaldata"'));?>
+					<?=$this->html->formStart(array('method' => 'post', 'action' => 'route.php?mod=component&act=multidelete', 'autocomplete' => 'off'));?>
+						<?=$this->html->inputHidden(array('name' => 'totaldata', 'value' => '0', 'options' => 'id="totaldata"'));?>
 						<?php
 							$columns = array(
 								array('title' => 'Id', 'options' => 'style="width:30px;"'),
@@ -83,12 +83,12 @@ class Component extends PoCore
 								array('title' => $GLOBALS['_']['component_action'], 'options' => 'class="no-sort" style="width:50px;"')
 							);
 						?>
-						<?=$this->pohtml->createTable(array('id' => 'table-component', 'class' => 'table table-striped table-bordered'), $columns, $tfoot = false);?>
-					<?=$this->pohtml->formEnd();?>
+						<?=$this->html->createTable(array('id' => 'table-component', 'class' => 'table table-striped table-bordered'), $columns, $tfoot = false);?>
+					<?=$this->html->formEnd();?>
 				</div>
 			</div>
 		</div>
-		<?=$this->pohtml->dialogDelete('component');?>
+		<?=$this->html->dialogDelete('component');?>
 		<?php
 	}
 
@@ -101,7 +101,7 @@ class Component extends PoCore
 	public function datatable()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'component', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		$table = 'component';
@@ -160,7 +160,7 @@ class Component extends PoCore
 				}
 			)
 		);
-		echo json_encode(SSP::simple($_POST, $this->poconnect, $table, $primarykey, $columns));
+		echo json_encode(SSP::simple($_POST, $this->connect, $table, $primarykey, $columns));
 	}
 
 	/**
@@ -172,14 +172,14 @@ class Component extends PoCore
 	public function addnew()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'component', 'create')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
 			if (!empty($_FILES['fupload']['tmp_name'])) {
 				$exp = explode('.', $_FILES['fupload']['name']);
-				$componentName = $this->postring->seo_title($exp[0]).'-'.rand(000000,999999).'-popoji.'.$exp[1];
-				$componentType = $this->postring->valid($_POST['type'], 'xss');
+				$componentName = $this->string->seo_title($exp[0]).'-'.rand(000000,999999).'-biji.'.$exp[1];
+				$componentType = $this->string->valid($_POST['type'], 'xss');
 				if ($componentType == 'component') {
 					$folderinstall = 'component';
 				} else {
@@ -187,51 +187,51 @@ class Component extends PoCore
 				}
 				if (in_array($exp[1], array('zip'))) {
 					move_uploaded_file($_FILES['fupload']['tmp_name'], '../'.DIR_CON.'/uploads/'.$componentName);
-					if (file_exists('../'.DIR_CON.'/'.$folderinstall.'/'.strtolower($this->postring->valid($_POST['component'], 'xss')))) {
+					if (file_exists('../'.DIR_CON.'/'.$folderinstall.'/'.strtolower($this->string->valid($_POST['component'], 'xss')))) {
 						unlink('../'.DIR_CON.'/uploads/'.$componentName);
-						$this->poflash->error($GLOBALS['_']['component_message_3'], 'admin.php?mod=component');
+						$this->flash->error($GLOBALS['_']['component_message_3'], 'admin.php?mod=component');
 					} else {
-						$archive = new PoPclZip('../'.DIR_CON.'/uploads/'.$componentName);
-						if ($archive->extract(PCLZIP_OPT_PATH, '../'.DIR_CON.'/'.$folderinstall.'/'.strtolower($this->postring->valid($_POST['component'], 'xss'))) == 0) {
+						$archive = new PclZip('../'.DIR_CON.'/uploads/'.$componentName);
+						if ($archive->extract(PCLZIP_OPT_PATH, '../'.DIR_CON.'/'.$folderinstall.'/'.strtolower($this->string->valid($_POST['component'], 'xss'))) == 0) {
 							unlink('../'.DIR_CON.'/uploads/'.$componentName);
-							$this->poflash->error($GLOBALS['_']['component_message_3'], 'admin.php?mod=component');
+							$this->flash->error($GLOBALS['_']['component_message_3'], 'admin.php?mod=component');
 						}
 						$data = array(
-							'component' => strtolower($this->postring->valid($_POST['component'], 'xss')),
-							'type' => $this->postring->valid($_POST['type'], 'xss'),
+							'component' => strtolower($this->string->valid($_POST['component'], 'xss')),
+							'type' => $this->string->valid($_POST['type'], 'xss'),
 							'datetime' => date('Y-m-d H:i:s')
 						);
-						$query_component = $this->podb->insertInto('component')->values($data);
+						$query_component = $this->db->insertInto('component')->values($data);
 						$query_component->execute();
 						unlink('../'.DIR_CON.'/uploads/'.$componentName);
-						if (file_exists('../'.DIR_CON.'/'.$folderinstall.'/'.strtolower($this->postring->valid($_POST['component'], 'xss')).'/install.php')) {
-							$this->poflash->success($GLOBALS['_']['component_message_1'], 'admin.php?mod=component&act=install&folder='.strtolower($this->postring->valid($_POST['component'], 'xss')));
+						if (file_exists('../'.DIR_CON.'/'.$folderinstall.'/'.strtolower($this->string->valid($_POST['component'], 'xss')).'/install.php')) {
+							$this->flash->success($GLOBALS['_']['component_message_1'], 'admin.php?mod=component&act=install&folder='.strtolower($this->string->valid($_POST['component'], 'xss')));
 						} else {
-							$this->poflash->success($GLOBALS['_']['component_message_1'], 'admin.php?mod=component');
+							$this->flash->success($GLOBALS['_']['component_message_1'], 'admin.php?mod=component');
 						}
 					}
 				} else {
-					$this->poflash->error($GLOBALS['_']['component_message_3'], 'admin.php?mod=component');
+					$this->flash->error($GLOBALS['_']['component_message_3'], 'admin.php?mod=component');
 				}
 			} else {
-				$this->poflash->error($GLOBALS['_']['component_message_3'], 'admin.php?mod=component');
+				$this->flash->error($GLOBALS['_']['component_message_3'], 'admin.php?mod=component');
 			}
 		}
 		?>
 		<div class="block-content">
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->headTitle($GLOBALS['_']['component_addnew']);?>
+					<?=$this->html->headTitle($GLOBALS['_']['component_addnew']);?>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'route.php?mod=component&act=addnew', 'enctype' => true, 'autocomplete' => 'off'));?>
+					<?=$this->html->formStart(array('method' => 'post', 'action' => 'route.php?mod=component&act=addnew', 'enctype' => true, 'autocomplete' => 'off'));?>
 						<div class="row">
 							<div class="col-md-12">
 								<div class="row">
 									<div class="col-md-6">
-										<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['component_title'], 'name' => 'component', 'id' => 'component', 'mandatory' => true, 'options' => 'required'));?>
+										<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['component_title'], 'name' => 'component', 'id' => 'component', 'mandatory' => true, 'options' => 'required'));?>
 									</div>
 									<div class="col-md-6">
 										<?php
@@ -239,16 +239,16 @@ class Component extends PoCore
 											$item[] = array('value' => 'component', 'title' => 'Component');
 											$item[] = array('value' => 'widget', 'title' => 'Widget');
 										?>
-										<?=$this->pohtml->inputSelect(array('id' => 'type', 'label' => $GLOBALS['_']['component_type'], 'name' => 'type', 'mandatory' => true), $item);?>
+										<?=$this->html->inputSelect(array('id' => 'type', 'label' => $GLOBALS['_']['component_type'], 'name' => 'type', 'mandatory' => true), $item);?>
 									</div>
 									<div class="col-md-12">
-										<?=$this->pohtml->inputText(array('type' => 'file', 'label' => $GLOBALS['_']['component_browse_file'], 'name' => 'fupload', 'id' => 'fupload', 'mandatory' => true));?>
+										<?=$this->html->inputText(array('type' => 'file', 'label' => $GLOBALS['_']['component_browse_file'], 'name' => 'fupload', 'id' => 'fupload', 'mandatory' => true));?>
 									</div>
 								</div>
-								<?=$this->pohtml->formAction();?>
+								<?=$this->html->formAction();?>
 							</div>
 						</div>
-					<?=$this->pohtml->formEnd();?>
+					<?=$this->html->formEnd();?>
 				</div>
 			</div>
 		</div>
@@ -264,11 +264,11 @@ class Component extends PoCore
 	public function delete()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'component', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$component = $this->podb->from('component')->where('id_component', $this->postring->valid($_POST['id'], 'sql'))->limit(1)->fetch();
+			$component = $this->db->from('component')->where('id_component', $this->string->valid($_POST['id'], 'sql'))->limit(1)->fetch();
 			$componentType = $component['type'];
 			if ($componentType == 'component') {
 				$folderinstall = 'component';
@@ -278,18 +278,18 @@ class Component extends PoCore
 			if (file_exists('../'.DIR_CON.'/'.$folderinstall.'/'.$component['component'].'/uninstall.php')) {
 				header('location:admin.php?mod=component&act=uninstall&folder='.$component['component']);
 			} else {
-				$delete_dir = new PoDirectory();
+				$delete_dir = new Directory();
 				if ($component['active'] == 'Y') {
 					$delete_folder = $delete_dir->deleteDir('../'.DIR_CON.'/'.$folderinstall.'/'.$component['component']);
 				} else {
 					$delete_folder = $delete_dir->deleteDir('../'.DIR_CON.'/'.$folderinstall.'/_'.$component['component']);
 				}
 				if ($delete_folder) {
-					$query = $this->podb->deleteFrom('component')->where('id_component', $this->postring->valid($_POST['id'], 'sql'));
+					$query = $this->db->deleteFrom('component')->where('id_component', $this->string->valid($_POST['id'], 'sql'));
 					$query->execute();
-					$this->poflash->success($GLOBALS['_']['component_message_2'], 'admin.php?mod=component');
+					$this->flash->success($GLOBALS['_']['component_message_2'], 'admin.php?mod=component');
 				} else {
-					$this->poflash->error($GLOBALS['_']['component_message_4'], 'admin.php?mod=component');
+					$this->flash->error($GLOBALS['_']['component_message_4'], 'admin.php?mod=component');
 				}
 			}
 		}
@@ -304,10 +304,10 @@ class Component extends PoCore
 	public function install()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'component', 'create')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
-		$component = $this->podb->from('component')->where('id_component', $this->postring->valid($_GET['id'], 'sql'))->limit(1)->fetch();
+		$component = $this->db->from('component')->where('id_component', $this->string->valid($_GET['id'], 'sql'))->limit(1)->fetch();
 		$componentType = $component['type'];
 		if ($componentType == 'component') {
 			$folderinstall = 'component';
@@ -322,13 +322,13 @@ class Component extends PoCore
 			$dir_ren = reset($dir_exp).$folderinstall.DIRECTORY_SEPARATOR.'_'.$_GET['folder'];
 			$dir_new = reset($dir_exp).$folderinstall.DIRECTORY_SEPARATOR.$_GET['folder'];
 			if (rename($dir_ren, $dir_new)) {
-				$query_component = $this->podb->update('component')
+				$query_component = $this->db->update('component')
 					->set(array('active' => 'Y'))
-					->where('id_component', $this->postring->valid($_GET['id'], 'sql'));
+					->where('id_component', $this->string->valid($_GET['id'], 'sql'));
 				$query_component->execute();
-				$this->poflash->success($GLOBALS['_']['component_message_5'], 'admin.php?mod=component');
+				$this->flash->success($GLOBALS['_']['component_message_5'], 'admin.php?mod=component');
 			} else {
-				$this->poflash->error($GLOBALS['_']['component_message_6'], 'admin.php?mod=component');
+				$this->flash->error($GLOBALS['_']['component_message_6'], 'admin.php?mod=component');
 			}
 		}
 	}
@@ -342,10 +342,10 @@ class Component extends PoCore
 	public function uninstall()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'component', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
-		$component = $this->podb->from('component')->where('id_component', $this->postring->valid($_GET['id'], 'sql'))->limit(1)->fetch();
+		$component = $this->db->from('component')->where('id_component', $this->string->valid($_GET['id'], 'sql'))->limit(1)->fetch();
 		$componentType = $component['type'];
 		if ($componentType == 'component') {
 			$folderinstall = 'component';
@@ -360,13 +360,13 @@ class Component extends PoCore
 			$dir_ren = reset($dir_exp).$folderinstall.DIRECTORY_SEPARATOR.$_GET['folder'];
 			$dir_new = reset($dir_exp).$folderinstall.DIRECTORY_SEPARATOR.'_'.$_GET['folder'];
 			if (rename($dir_ren, $dir_new)) {
-				$query_component = $this->podb->update('component')
+				$query_component = $this->db->update('component')
 					->set(array('active' => 'N'))
-					->where('id_component', $this->postring->valid($_GET['id'], 'sql'));
+					->where('id_component', $this->string->valid($_GET['id'], 'sql'));
 				$query_component->execute();
-				$this->poflash->success($GLOBALS['_']['component_message_7'], 'admin.php?mod=component');
+				$this->flash->success($GLOBALS['_']['component_message_7'], 'admin.php?mod=component');
 			} else {
-				$this->poflash->error($GLOBALS['_']['component_message_8'], 'admin.php?mod=component');
+				$this->flash->error($GLOBALS['_']['component_message_8'], 'admin.php?mod=component');
 			}
 		}
 	}
