@@ -1,11 +1,11 @@
 <?php
 /*
  *
- * - PopojiCMS Front End File
+ * - BijiCMS Front End File
  *
  * - File : category.php
  * - Version : 1.1
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
@@ -30,7 +30,7 @@ $router->match('GET|POST', '/category/([a-z0-9_-]+)', function($seotitle) use ($
 			'picture' => ''
 		);
 	} else {
-		$category = $core->podb->from('category')
+		$category = $core->db->from('category')
 			->select(array('category_description.title'))
 			->leftJoin('category_description ON category_description.id_category = category.id_category')
 			->where('category.seotitle', $seotitle)
@@ -42,14 +42,14 @@ $router->match('GET|POST', '/category/([a-z0-9_-]+)', function($seotitle) use ($
 	if ($category) {
 		$info = array(
 			'page_title' => htmlspecialchars_decode($category['title']),
-			'page_desc' => $category['title'].' - '.$core->posetting[2]['value'],
+			'page_desc' => $category['title'].' - '.$core->setting[2]['value'],
 			'page_key' => $category['title'],
 			'social_mod' => $lang['front_category_title'],
-			'social_name' => $core->posetting[0]['value'],
-			'social_url' => $core->posetting[1]['value'].'/category/'.$category['seotitle'],
+			'social_name' => $core->setting[0]['value'],
+			'social_url' => $core->setting[1]['value'].'/category/'.$category['seotitle'],
 			'social_title' => htmlspecialchars_decode($category['title']),
-			'social_desc' => $category['title'].' - '.$core->posetting[2]['value'],
-			'social_img' => $core->posetting[1]['value'].'/'.DIR_CON.'/uploads/'.$category['picture'],
+			'social_desc' => $category['title'].' - '.$core->setting[2]['value'],
+			'social_img' => $core->setting[1]['value'].'/'.DIR_CON.'/uploads/'.$category['picture'],
 			'page' => '1'
 		);
 		$adddata = array_merge($info, $lang);
@@ -60,14 +60,14 @@ $router->match('GET|POST', '/category/([a-z0-9_-]+)', function($seotitle) use ($
 	} else {
 		$info = array(
 			'page_title' => $lang['front_category_not_found'],
-			'page_desc' => $core->posetting[2]['value'],
-			'page_key' => $core->posetting[3]['value'],
+			'page_desc' => $core->setting[2]['value'],
+			'page_key' => $core->setting[3]['value'],
 			'social_mod' => $lang['front_category_title'],
-			'social_name' => $core->posetting[0]['value'],
-			'social_url' => $core->posetting[1]['value'],
+			'social_name' => $core->setting[0]['value'],
+			'social_url' => $core->setting[1]['value'],
 			'social_title' => $lang['front_category_not_found'],
-			'social_desc' => $core->posetting[2]['value'],
-			'social_img' => $core->posetting[1]['value'].'/'.DIR_INC.'/images/favicon.png'
+			'social_desc' => $core->setting[2]['value'],
+			'social_img' => $core->setting[1]['value'].'/'.DIR_INC.'/images/favicon.png'
 		);
 		$adddata = array_merge($info, $lang);
 		$templates->addData(
@@ -94,7 +94,7 @@ $router->match('GET|POST', '/category/([a-z0-9_-]+)/page/(\d+)', function($seoti
 			'picture' => ''
 		);
 	} else {
-		$category = $core->podb->from('category')
+		$category = $core->db->from('category')
 			->select(array('category_description.title'))
 			->leftJoin('category_description ON category_description.id_category = category.id_category')
 			->where('category.seotitle', $seotitle)
@@ -106,14 +106,14 @@ $router->match('GET|POST', '/category/([a-z0-9_-]+)/page/(\d+)', function($seoti
 	if ($category) {
 		$info = array(
 			'page_title' => htmlspecialchars_decode($category['title']),
-			'page_desc' => $category['title'].' - '.$core->posetting[2]['value'],
+			'page_desc' => $category['title'].' - '.$core->setting[2]['value'],
 			'page_key' => $category['title'],
 			'social_mod' => $lang['front_category_title'],
-			'social_name' => $core->posetting[0]['value'],
-			'social_url' => $core->posetting[1]['value'].'/category/'.$category['seotitle'],
+			'social_name' => $core->setting[0]['value'],
+			'social_url' => $core->setting[1]['value'].'/category/'.$category['seotitle'],
 			'social_title' => htmlspecialchars_decode($category['title']),
-			'social_desc' => $category['title'].' - '.$core->posetting[2]['value'],
-			'social_img' => $core->posetting[1]['value'].'/'.DIR_CON.'/uploads/'.$category['picture'],
+			'social_desc' => $category['title'].' - '.$core->setting[2]['value'],
+			'social_img' => $core->setting[1]['value'].'/'.DIR_CON.'/uploads/'.$category['picture'],
 			'page' => $page
 		);
 		$adddata = array_merge($info, $lang);
@@ -124,14 +124,14 @@ $router->match('GET|POST', '/category/([a-z0-9_-]+)/page/(\d+)', function($seoti
 	} else {
 		$info = array(
 			'page_title' => $lang['front_category_not_found'],
-			'page_desc' => $core->posetting[2]['value'],
-			'page_key' => $core->posetting[3]['value'],
+			'page_desc' => $core->setting[2]['value'],
+			'page_key' => $core->setting[3]['value'],
 			'social_mod' => $lang['front_category_title'],
-			'social_name' => $core->posetting[0]['value'],
-			'social_url' => $core->posetting[1]['value'],
+			'social_name' => $core->setting[0]['value'],
+			'social_url' => $core->setting[1]['value'],
 			'social_title' => $lang['front_category_not_found'],
-			'social_desc' => $core->posetting[2]['value'],
-			'social_img' => $core->posetting[1]['value'].'/'.DIR_INC.'/images/favicon.png'
+			'social_desc' => $core->setting[2]['value'],
+			'social_img' => $core->setting[1]['value'].'/'.DIR_INC.'/images/favicon.png'
 		);
 		$adddata = array_merge($info, $lang);
 		$templates->addData(
