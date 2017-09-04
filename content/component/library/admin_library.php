@@ -1,11 +1,11 @@
 <?php
 /*
  *
- * - PopojiCMS Admin File
+ * - BijiCMS Admin File
  *
  * - File : admin_library.php
  * - Version : 1.0
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
@@ -36,7 +36,7 @@ if (empty($_SESSION['namauser']) AND empty($_SESSION['passuser']) AND $_SESSION[
 	exit;
 }
 
-class Library extends PoCore
+class Library extends Core
 {
 
 	/**
@@ -59,20 +59,20 @@ class Library extends PoCore
 	public function index()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'library', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		?>
 		<div class="block-content">
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->headTitle($GLOBALS['_']['component_name'], '<a href="../'.DIR_INC.'/js/filemanager/dialog.php?type=0&editor=mce_0" class="btn btn-success btn-sm btn-title pull-right" id="browse-file"><i class="fa fa-image"></i> '.$GLOBALS['_']['addnew'].'</a>');?>
+					<?=$this->html->headTitle($GLOBALS['_']['component_name'], '<a href="../'.DIR_INC.'/js/filemanager/dialog.php?type=0&editor=mce_0" class="btn btn-success btn-sm btn-title pull-right" id="browse-file"><i class="fa fa-image"></i> '.$GLOBALS['_']['addnew'].'</a>');?>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'route.php?mod=library&act=multidelete', 'autocomplete' => 'off'));?>
-						<?=$this->pohtml->inputHidden(array('name' => 'totaldata', 'value' => '0', 'options' => 'id="totaldata"'));?>
+					<?=$this->html->formStart(array('method' => 'post', 'action' => 'route.php?mod=library&act=multidelete', 'autocomplete' => 'off'));?>
+						<?=$this->html->inputHidden(array('name' => 'totaldata', 'value' => '0', 'options' => 'id="totaldata"'));?>
 						<?php
 							$columns = array(
 								array('title' => $GLOBALS['_']['library_name'], 'options' => ''),
@@ -82,12 +82,12 @@ class Library extends PoCore
 								array('title' => $GLOBALS['_']['library_action'], 'options' => 'class="no-sort" style="width:50px;"')
 							);
 						?>
-						<?=$this->pohtml->createTable(array('id' => 'table-library', 'class' => 'table table-striped table-bordered'), $columns, $tfoot = true);?>
-					<?=$this->pohtml->formEnd();?>
+						<?=$this->html->createTable(array('id' => 'table-library', 'class' => 'table table-striped table-bordered'), $columns, $tfoot = true);?>
+					<?=$this->html->formEnd();?>
 				</div>
 			</div>
 		</div>
-		<?=$this->pohtml->dialogDelete('library');?>
+		<?=$this->html->dialogDelete('library');?>
 		<?php
 	}
 
@@ -100,16 +100,16 @@ class Library extends PoCore
 	public function datatable()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'library', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
-		$get_files = new PoDirectory();
+		$get_files = new Directory();
 		$begin_files = $get_files->listDir('../'.DIR_CON.'/uploads/');
 		$files = $get_files->listDir('../'.DIR_CON.'/uploads/');
 		$cfiles = count($begin_files);
 		if (isset($_POST['search']['value'])) {
 			if ($_POST['search']['value'] != '') {
-				$files = preg_grep('/'.$this->postring->valid($_POST['search']['value'], 'xss').'/i', $files);
+				$files = preg_grep('/'.$this->string->valid($_POST['search']['value'], 'xss').'/i', $files);
 				$cfiles = count($files);
 			}
 		}
@@ -167,11 +167,11 @@ class Library extends PoCore
 	public function delete()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'library', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			if ($this->postring->isImage('../'.DIR_CON.'/uploads/'.$_POST['id'])) {
+			if ($this->string->isImage('../'.DIR_CON.'/uploads/'.$_POST['id'])) {
 				if (file_exists('../'.DIR_CON.'/thumbs/'.$_POST['id'])) {
 					unlink('../'.DIR_CON.'/thumbs/'.$_POST['id']);
 				}
@@ -186,7 +186,7 @@ class Library extends PoCore
 					unlink('../'.DIR_CON.'/uploads/'.$_POST['id']);
 				}
 			}
-			$this->poflash->success($GLOBALS['_']['library_message_2'], 'admin.php?mod=library');
+			$this->flash->success($GLOBALS['_']['library_message_2'], 'admin.php?mod=library');
 		}
 	}
 
@@ -199,15 +199,15 @@ class Library extends PoCore
 	public function multidelete()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'library', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$totaldata = $this->postring->valid($_POST['totaldata'], 'xss');
+			$totaldata = $this->string->valid($_POST['totaldata'], 'xss');
 			if ($totaldata != "0") {
 				$items = $_POST['item'];
 				foreach($items as $item){
-					if ($this->postring->isImage('../'.DIR_CON.'/uploads/'.$item['deldata'])) {
+					if ($this->string->isImage('../'.DIR_CON.'/uploads/'.$item['deldata'])) {
 						if (file_exists('../'.DIR_CON.'/thumbs/'.$item['deldata'])) {
 							unlink('../'.DIR_CON.'/thumbs/'.$item['deldata']);
 						}
@@ -223,9 +223,9 @@ class Library extends PoCore
 						}
 					}
 				}
-				$this->poflash->success($GLOBALS['_']['library_message_2'], 'admin.php?mod=library');
+				$this->flash->success($GLOBALS['_']['library_message_2'], 'admin.php?mod=library');
 			} else {
-				$this->poflash->error($GLOBALS['_']['library_message_4'], 'admin.php?mod=library');
+				$this->flash->error($GLOBALS['_']['library_message_4'], 'admin.php?mod=library');
 			}
 		}
 	}
