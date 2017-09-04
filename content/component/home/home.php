@@ -1,11 +1,11 @@
 <?php
 /*
  *
- * - PopojiCMS Front End File
+ * - BijiCMS Front End File
  *
  * - File : home.php
  * - Version : 1.1
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
@@ -23,15 +23,15 @@
 $router->match('GET|POST', '/', function() use ($core, $templates) {
 	$lang = $core->setlang('home', WEB_LANG);
 	$info = array(
-		'page_title' => $core->posetting[0]['value'],
-		'page_desc' => $core->posetting[2]['value'],
-		'page_key' => $core->posetting[3]['value'],
+		'page_title' => $core->setting[0]['value'],
+		'page_desc' => $core->setting[2]['value'],
+		'page_key' => $core->setting[3]['value'],
 		'social_mod' => $lang['front_home'],
-		'social_name' => $core->posetting[0]['value'],
-		'social_url' => $core->posetting[1]['value'],
-		'social_title' => $core->posetting[0]['value'],
-		'social_desc' => $core->posetting[2]['value'],
-		'social_img' => $core->posetting[1]['value'].'/'.DIR_INC.'/images/favicon.png'
+		'social_name' => $core->setting[0]['value'],
+		'social_url' => $core->setting[1]['value'],
+		'social_title' => $core->setting[0]['value'],
+		'social_desc' => $core->setting[2]['value'],
+		'social_img' => $core->setting[1]['value'].'/'.DIR_INC.'/images/favicon.png'
 	);
 	$adddata = array_merge($info, $lang);
 	$templates->addData(
@@ -49,15 +49,15 @@ $router->match('GET|POST', '/', function() use ($core, $templates) {
 $router->match('GET|POST', '/home', function() use ($core, $templates) {
 	$lang = $core->setlang('home', WEB_LANG);
 	$info = array(
-		'page_title' => $core->posetting[0]['value'],
-		'page_desc' => $core->posetting[2]['value'],
-		'page_key' => $core->posetting[3]['value'],
+		'page_title' => $core->setting[0]['value'],
+		'page_desc' => $core->setting[2]['value'],
+		'page_key' => $core->setting[3]['value'],
 		'social_mod' => $lang['front_home'],
-		'social_name' => $core->posetting[0]['value'],
-		'social_url' => $core->posetting[1]['value'],
-		'social_title' => $core->posetting[0]['value'],
-		'social_desc' => $core->posetting[2]['value'],
-		'social_img' => $core->posetting[1]['value'].'/'.DIR_INC.'/images/favicon.png'
+		'social_name' => $core->setting[0]['value'],
+		'social_url' => $core->setting[1]['value'],
+		'social_title' => $core->setting[0]['value'],
+		'social_desc' => $core->setting[2]['value'],
+		'social_img' => $core->setting[1]['value'].'/'.DIR_INC.'/images/favicon.png'
 	);
 	$adddata = array_merge($info, $lang);
 	$templates->addData(
@@ -76,29 +76,29 @@ $router->match('POST', '/subscribe', function() use ($core, $templates) {
 	$lang = $core->setlang('home', WEB_LANG);
 	if (!empty($_POST)) {
 		if (!empty($_POST['email'])) {
-			$subscribe = $core->podb->from('subscribe')->where('email', $core->postring->valid($_POST['email'], 'xss'))->count();
+			$subscribe = $core->db->from('subscribe')->where('email', $core->string->valid($_POST['email'], 'xss'))->count();
 			if ($subscribe > 0) {
 				echo "<script language='javascript'>
 					window.alert('".$lang['front_subscribe_error']."')
 					window.location.href='./';
 				</script>";
 			} else {
-				$core->poval->validation_rules(array(
+				$core->val->validation_rules(array(
 					'email' => 'required|valid_email'
 				));
-				$core->poval->filter_rules(array(
+				$core->val->filter_rules(array(
 					'email' => 'trim|sanitize_email'
 				));
-				$validated_data = $core->poval->run($_POST);
+				$validated_data = $core->val->run($_POST);
 				if ($validated_data === false) {
 					header('location:'.BASE_URL.'/404.php');
 				} else {
-					$name = explode('@', $core->postring->valid($_POST['email'], 'xss'));
+					$name = explode('@', $core->string->valid($_POST['email'], 'xss'));
 					$data = array(
-						'email' => $core->postring->valid($_POST['email'], 'xss'),
+						'email' => $core->string->valid($_POST['email'], 'xss'),
 						'name' => ucfirst($name[0])
 					);
-					$query = $core->podb->insertInto('subscribe')->values($data);
+					$query = $core->db->insertInto('subscribe')->values($data);
 					$query->execute();
 					unset($_POST);
 					echo "<script language='javascript'>
@@ -122,7 +122,7 @@ $router->match('POST', '/subscribe', function() use ($core, $templates) {
  *
 */
 $router->match('GET|POST', '/member', function() use ($core, $templates) {
-	if ($core->posetting[17]['value'] == 'Y') {
+	if ($core->setting[17]['value'] == 'Y') {
 		if (empty($_SESSION['namauser_member']) AND empty($_SESSION['passuser_member']) AND empty($_SESSION['login_member'])) {
 			header('location:'.BASE_URL.'/member/login');
 		} else {
@@ -134,7 +134,7 @@ $router->match('GET|POST', '/member', function() use ($core, $templates) {
 			$templates->addData(
 				$adddata
 			);
-			$user = $core->podb->from('users')
+			$user = $core->db->from('users')
 				->where('username', $_SESSION['namauser_member'])
 				->where('level', '4')
 				->limit(1)
@@ -153,26 +153,26 @@ $router->match('GET|POST', '/member', function() use ($core, $templates) {
  *
 */
 $router->match('GET|POST', '/member/login', function() use ($core, $templates) {
-	if ($core->posetting[17]['value'] == 'Y') {
+	if ($core->setting[17]['value'] == 'Y') {
 		if (empty($_SESSION['namauser_member']) AND empty($_SESSION['passuser_member']) AND empty($_SESSION['login_member'])) {
 			if (isset($_COOKIE['member_cookie'])) {
 				$username = $_COOKIE['member_cookie']['username'];
 				$pass = $_COOKIE['member_cookie']['password'];
-				$count_user = $core->podb->from('users')
+				$count_user = $core->db->from('users')
 					->where('username', $username)
 					->where('password', $pass)
 					->where('level', '4')
 					->where('block', 'N')
 					->count();
 				if ($count_user > 0) {
-					$user = $core->podb->from('users')
+					$user = $core->db->from('users')
 						->where('username', $username)
 						->where('password', $pass)
 						->where('level', '4')
 						->where('block', 'N')
 						->limit(1)
 						->fetch();
-					$timeout = new PoTimeout;
+					$timeout = new Timeout;
 					$timeout->rec_session_member($user);
 					$timeout->timer_member();
 					$sid_lama = session_id();
@@ -181,7 +181,7 @@ $router->match('GET|POST', '/member/login', function() use ($core, $templates) {
 					$sesi = array(
 						'id_session' => $sid_baru
 					);
-					$query = $core->podb->update('users')
+					$query = $core->db->update('users')
 						->set($sesi)
 						->where('username', $username);
 					$query->execute();
@@ -191,34 +191,34 @@ $router->match('GET|POST', '/member/login', function() use ($core, $templates) {
 				$alertmsg = '';
 				$lang = $core->setlang('home', WEB_LANG);
 				if (!empty($_POST)) {
-					$_POST = $core->poval->sanitize($_POST);
-					$core->poval->validation_rules(array(
+					$_POST = $core->val->sanitize($_POST);
+					$core->val->validation_rules(array(
 						'username' => 'required|max_len,50|min_len,3',
 						'password' => 'required|max_len,50|min_len,6'
 					));
-					$core->poval->filter_rules(array(
+					$core->val->filter_rules(array(
 						'username' => 'trim|sanitize_string',
 						'password' => 'trim'
 					));
-					$validated_data = $core->poval->run($_POST);
+					$validated_data = $core->val->run($_POST);
 					if ($validated_data === false) {
 						$alertmsg = '<div class="alert alert-warning">'.$lang['front_member_notif_1'].'<a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a></div>';
 					} else {
-						$count_user = $core->podb->from('users')
+						$count_user = $core->db->from('users')
 							->where('username', $_POST['username'])
 							->where('password', md5($_POST['password']))
 							->where('level', '4')
 							->where('block', 'N')
 							->count();
 						if ($count_user > 0) {
-							$user = $core->podb->from('users')
+							$user = $core->db->from('users')
 								->where('username', $_POST['username'])
 								->where('password', md5($_POST['password']))
 								->where('level', '4')
 								->where('block', 'N')
 								->limit(1)
 								->fetch();
-							$timeout = new PoTimeout;
+							$timeout = new Timeout;
 							$timeout->rec_session_member($user);
 							$timeout->timer_member();
 							$sid_lama = session_id();
@@ -227,7 +227,7 @@ $router->match('GET|POST', '/member/login', function() use ($core, $templates) {
 							$sesi = array(
 								'id_session' => $sid_baru
 							);
-							$query = $core->podb->update('users')
+							$query = $core->db->update('users')
 								->set($sesi)
 								->where('username', $_POST['username']);
 							$query->execute();
@@ -237,21 +237,21 @@ $router->match('GET|POST', '/member/login', function() use ($core, $templates) {
 							}
 							header('location:'.BASE_URL.'/member');
 						} else {
-							$count_user_by_email = $core->podb->from('users')
+							$count_user_by_email = $core->db->from('users')
 								->where('email', $_POST['username'])
 								->where('password', md5($_POST['password']))
 								->where('level', '4')
 								->where('block', 'N')
 								->count();
 							if ($count_user_by_email > 0) {
-								$user = $core->podb->from('users')
+								$user = $core->db->from('users')
 									->where('email', $_POST['username'])
 									->where('password', md5($_POST['password']))
 									->where('level', '4')
 									->where('block', 'N')
 									->limit(1)
 									->fetch();
-								$timeout = new PoTimeout;
+								$timeout = new Timeout;
 								$timeout->rec_session_member($user);
 								$timeout->timer_member();
 								$sid_lama = session_id();
@@ -260,7 +260,7 @@ $router->match('GET|POST', '/member/login', function() use ($core, $templates) {
 								$sesi = array(
 									'id_session' => $sid_baru
 								);
-								$query = $core->podb->update('users')
+								$query = $core->db->update('users')
 									->set($sesi)
 									->where('email', $_POST['username']);
 								$query->execute();
@@ -300,28 +300,28 @@ $router->match('GET|POST', '/member/login', function() use ($core, $templates) {
  *
 */
 $router->match('GET|POST', '/member/register', function() use ($core, $templates) {
-	if ($core->posetting[17]['value'] == 'Y') {
+	if ($core->setting[17]['value'] == 'Y') {
 		if (empty($_SESSION['namauser_member']) AND empty($_SESSION['passuser_member']) AND empty($_SESSION['login_member'])) {
 			$alertmsg = '';
 			$lang = $core->setlang('home', WEB_LANG);
 			if (!empty($_POST)) {
-				$core->poval->validation_rules(array(
+				$core->val->validation_rules(array(
 					'username' => 'required|alpha_dash|max_len,50|min_len,3',
 					'password' => 'required|max_len,50|min_len,6',
 					'repassword' => 'required|max_len,50|min_len,6',
 					'email' => 'required|valid_email'
 				));
-				$core->poval->filter_rules(array(
+				$core->val->filter_rules(array(
 					'username' => 'trim|sanitize_string',
 					'password' => 'trim',
 					'repassword' => 'trim',
 					'email' => 'trim|sanitize_email'
 				));
-				$validated_data = $core->poval->run($_POST);
+				$validated_data = $core->val->run($_POST);
 				if ($validated_data === false) {
 					$alertmsg = '<div class="alert alert-warning">'.$lang['front_member_notif_1'].'<a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a></div>';
 				} else {
-					$count_user_email = $core->podb->from('users')
+					$count_user_email = $core->db->from('users')
 						->where('email', $_POST['email'])
 						->count();
 					if ($count_user_email > 0) {
@@ -331,13 +331,13 @@ $router->match('GET|POST', '/member/register', function() use ($core, $templates
 							if (md5($_POST['password']) != md5($_POST['repassword'])) {
 								$alertmsg = '<div class="alert alert-warning">'.$lang['front_member_notif_4'].'<a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a></div>';
 							} else {
-								$count_user_name = $core->podb->from('users')
+								$count_user_name = $core->db->from('users')
 									->where('username', strtolower($_POST['username']))
 									->count();
 								if ($count_user_name > 0) {
 									$alertmsg = '<div class="alert alert-warning">'.$lang['front_member_notif_5'].'<a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a></div>';
 								} else {
-									$last_user = $core->podb->from('users')->limit(1)->orderBy('id_user DESC')->fetch();
+									$last_user = $core->db->from('users')->limit(1)->orderBy('id_user DESC')->fetch();
 									$data = array(
 										'id_user' => $last_user['id_user']+1,
 										'username' => strtolower($_POST['username']),
@@ -352,16 +352,16 @@ $router->match('GET|POST', '/member/register', function() use ($core, $templates
 										'block' => 'Y',
 										'id_session' => md5($_POST['password'])
 									);
-									$query = $core->podb->insertInto('users')->values($data);
+									$query = $core->db->insertInto('users')->values($data);
 									$query->execute();
-									$website_name = $core->posetting[0]['value'];
-									$website_url = $core->posetting[1]['value'];
+									$website_name = $core->setting[0]['value'];
+									$website_url = $core->setting[1]['value'];
 									$username = strtolower($_POST['username']);
-									$email = $_POST['email'];
+									$m_email = $_POST['email'];
 									$pass = $_POST['password'];
 									$passmd5 = md5($_POST['password']);
 									$subject = "Email Account Activation For $website_name";
-									$from = $core->posetting[5]['value'];
+									$from = $core->setting[5]['value'];
 									$message = "<html>
 										<body>
 											Indonesia :<br />
@@ -392,35 +392,35 @@ $router->match('GET|POST', '/member/register', function() use ($core, $templates
 											$website_name.
 										</body>
 									</html>";
-									if ($core->posetting[23]['value'] != 'SMTP') {
-										$poemail = new PoEmail;
-										$send = $poemail
+									if ($core->setting[23]['value'] != 'SMTP') {
+										$email = new Email;
+										$send = $email
 											->setOption(
 												array(
 													messageType => 'html'
 												)
 											)
-											->to($email)
+											->to($m_email)
 											->subject($subject)
 											->message($message)
 											->from($from)
 											->mail();
 									} else {
-										$core->pomail->isSMTP();
-										$core->pomail->SMTPDebug = 0;
-										$core->pomail->Debugoutput = 'html';
-										$core->pomail->Host = $core->posetting[24]['value'];
-										$core->pomail->Port = $core->posetting[27]['value'];
-										$core->pomail->SMTPAuth = true;
-										$core->pomail->SMTPSecure = 'ssl';
-										$core->pomail->Username = $core->posetting[25]['value'];;
-										$core->pomail->Password = $core->posetting[26]['value'];
-										$core->pomail->setFrom($core->posetting[5]['value'], $core->posetting[0]['value']);
-										$core->pomail->addAddress($email, $username);
-										$core->pomail->IsHTML(true);
-										$core->pomail->Subject = $subject;
-										$core->pomail->Body = $message;
-										$core->pomail->send();
+										$core->mail->isSMTP();
+										$core->mail->SMTPDebug = 0;
+										$core->mail->Debugoutput = 'html';
+										$core->mail->Host = $core->setting[24]['value'];
+										$core->mail->Port = $core->setting[27]['value'];
+										$core->mail->SMTPAuth = true;
+										$core->mail->SMTPSecure = 'ssl';
+										$core->mail->Username = $core->setting[25]['value'];;
+										$core->mail->Password = $core->setting[26]['value'];
+										$core->mail->setFrom($core->setting[5]['value'], $core->setting[0]['value']);
+										$core->mail->addAddress($m_email, $username);
+										$core->mail->IsHTML(true);
+										$core->mail->Subject = $subject;
+										$core->mail->Body = $message;
+										$core->mail->send();
 									}
 									unset($_POST);
 									$alertmsg = '<div class="alert alert-info"><i class="fa fa-info"></i>&nbsp;&nbsp;'.$lang['front_member_notif_6'].'<a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a></div>';
@@ -456,19 +456,19 @@ $router->match('GET|POST', '/member/register', function() use ($core, $templates
  *
 */
 $router->match('GET|POST', '/member/activation/([a-z0-9_-]+)/([a-z0-9_-]+)', function($username, $pass) use ($core, $templates) {
-	if ($core->posetting[17]['value'] == 'Y') {
+	if ($core->setting[17]['value'] == 'Y') {
 		if (!empty($username) && !empty($pass)){
 			$alertmsg = '';
 			$lang = $core->setlang('home', WEB_LANG);
-			$username = $core->postring->valid($username, 'xss');
-			$pass = $core->postring->valid($pass, 'xss');
-			$count_user = $core->podb->from('users')
+			$username = $core->string->valid($username, 'xss');
+			$pass = $core->string->valid($pass, 'xss');
+			$count_user = $core->db->from('users')
 				->where('username', $username)
 				->where('id_session', $pass)
 				->where('level', '4')
 				->count();
 			if ($count_user > 0) {
-				$user = $core->podb->from('users')
+				$user = $core->db->from('users')
 					->where('username', $username)
 					->where('id_session', $pass)
 					->where('level', '4')
@@ -478,7 +478,7 @@ $router->match('GET|POST', '/member/activation/([a-z0-9_-]+)/([a-z0-9_-]+)', fun
 					$data = array(
 						'block' => 'N'
 					);
-					$query = $core->podb->update('users')
+					$query = $core->db->update('users')
 						->set($data)
 						->where('username', $username)
 						->where('id_session', $pass);
@@ -514,28 +514,28 @@ $router->match('GET|POST', '/member/activation/([a-z0-9_-]+)/([a-z0-9_-]+)', fun
  *
 */
 $router->match('GET|POST', '/member/forgot', function() use ($core, $templates) {
-	if ($core->posetting[17]['value'] == 'Y') {
+	if ($core->setting[17]['value'] == 'Y') {
 		if (empty($_SESSION['namauser_member']) AND empty($_SESSION['passuser_member']) AND empty($_SESSION['login_member'])) {
 			$alertmsg = '';
 			$lang = $core->setlang('home', WEB_LANG);
 			if (!empty($_POST)) {
-				$_POST = $core->poval->sanitize($_POST);
-				$core->poval->validation_rules(array(
+				$_POST = $core->val->sanitize($_POST);
+				$core->val->validation_rules(array(
 					'email' => 'required|valid_email'
 				));
-				$core->poval->filter_rules(array(
+				$core->val->filter_rules(array(
 					'email' => 'trim|sanitize_email'
 				));
-				$validated_data = $core->poval->run($_POST);
+				$validated_data = $core->val->run($_POST);
 				if ($validated_data === false) {
 					$alertmsg = '<div class="alert alert-warning">'.$lang['front_member_notif_8'].'<a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a></div>';
 				} else {
-					$count_user = $core->podb->from('users')
+					$count_user = $core->db->from('users')
 						->where('email', $_POST['email'])
 						->where('level', '4')
 						->count();
 					if ($count_user > 0) {
-						$user = $core->podb->from('users')
+						$user = $core->db->from('users')
 							->where('email', $_POST['email'])
 							->where('level', '4')
 							->limit(1)
@@ -544,16 +544,16 @@ $router->match('GET|POST', '/member/forgot', function() use ($core, $templates) 
 						$data = array(
 							'forget_key' => $forgotkey
 						);
-						$query = $core->podb->update('users')
+						$query = $core->db->update('users')
 							->set($data)
 							->where('email', $_POST['email']);
 						$query->execute();
-						$website_name = $core->posetting[0]['value'];
-						$website_url = $core->posetting[1]['value'];
+						$website_name = $core->setting[0]['value'];
+						$website_url = $core->setting[1]['value'];
 						$username = $user['username'];
 						$nama_lengkap = $user['nama_lengkap'];
 						$subject = "Recovery Password For $website_name";
-						$from = $core->posetting[5]['value'];
+						$from = $core->setting[5]['value'];
 						$message = "<html>
 							<body>
 								Indonesia :<br />
@@ -578,9 +578,9 @@ $router->match('GET|POST', '/member/forgot', function() use ($core, $templates) 
 								$website_name.
 							</body>
 						</html>";
-						if ($core->posetting[23]['value'] != 'SMTP') {
-							$poemail = new PoEmail;
-							$send = $poemail
+						if ($core->setting[23]['value'] != 'SMTP') {
+							$email = new Email;
+							$send = $email
 								->setOption(
 									array(
 										messageType => 'html'
@@ -592,21 +592,21 @@ $router->match('GET|POST', '/member/forgot', function() use ($core, $templates) 
 								->from($from)
 								->mail();
 						} else {
-							$core->pomail->isSMTP();
-							$core->pomail->SMTPDebug = 0;
-							$core->pomail->Debugoutput = 'html';
-							$core->pomail->Host = $core->posetting[24]['value'];
-							$core->pomail->Port = $core->posetting[27]['value'];
-							$core->pomail->SMTPAuth = true;
-							$core->pomail->SMTPSecure = 'ssl';
-							$core->pomail->Username = $core->posetting[25]['value'];;
-							$core->pomail->Password = $core->posetting[26]['value'];
-							$core->pomail->setFrom($core->posetting[5]['value'], $core->posetting[0]['value']);
-							$core->pomail->addAddress($user['email'], $nama_lengkap);
-							$core->pomail->IsHTML(true);
-							$core->pomail->Subject = $subject;
-							$core->pomail->Body = $message;
-							$core->pomail->send();
+							$core->mail->isSMTP();
+							$core->mail->SMTPDebug = 0;
+							$core->mail->Debugoutput = 'html';
+							$core->mail->Host = $core->setting[24]['value'];
+							$core->mail->Port = $core->setting[27]['value'];
+							$core->mail->SMTPAuth = true;
+							$core->mail->SMTPSecure = 'ssl';
+							$core->mail->Username = $core->setting[25]['value'];;
+							$core->mail->Password = $core->setting[26]['value'];
+							$core->mail->setFrom($core->setting[5]['value'], $core->setting[0]['value']);
+							$core->mail->addAddress($user['email'], $nama_lengkap);
+							$core->mail->IsHTML(true);
+							$core->mail->Subject = $subject;
+							$core->mail->Body = $message;
+							$core->mail->send();
 						}
 						$alertmsg = '<div class="alert alert-info">'.$lang['front_member_notif_9'].'<a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a></div>';
 					} else {
@@ -638,19 +638,19 @@ $router->match('GET|POST', '/member/forgot', function() use ($core, $templates) 
  *
 */
 $router->match('GET|POST', '/member/recover/([a-z0-9_-]+)/([a-z0-9_-]+)', function($username, $forgotkey) use ($core, $templates) {
-	if ($core->posetting[17]['value'] == 'Y') {
+	if ($core->setting[17]['value'] == 'Y') {
 		if (!empty($username) && !empty($forgotkey)){
 			$alertmsg = '';
 			$lang = $core->setlang('home', WEB_LANG);
-			$forgetuser = $core->postring->valid($username, 'xss');
-			$forgetkey = $core->postring->valid($forgotkey, 'xss');
-			$count_user = $core->podb->from('users')
+			$forgetuser = $core->string->valid($username, 'xss');
+			$forgetkey = $core->string->valid($forgotkey, 'xss');
+			$count_user = $core->db->from('users')
 				->where('username', $forgetuser)
 				->where('forget_key', $forgetkey)
 				->where('level', '4')
 				->count();
 			if ($count_user > 0) {
-				$user = $core->podb->from('users')
+				$user = $core->db->from('users')
 					->where('username', $forgetuser)
 					->where('forget_key', $forgetkey)
 					->where('level', '4')
@@ -663,7 +663,7 @@ $router->match('GET|POST', '/member/recover/([a-z0-9_-]+)/([a-z0-9_-]+)', functi
 						'password' => $pass,
 						'forget_key' => ''
 					);
-					$query = $core->podb->update('users')
+					$query = $core->db->update('users')
 						->set($data)
 						->where('username', $forgetuser)
 						->where('forget_key', $forgetkey);
@@ -701,7 +701,7 @@ $router->match('GET|POST', '/member/recover/([a-z0-9_-]+)/([a-z0-9_-]+)', functi
 $router->match('GET|POST', '/member/login/facebook', function() use ($core, $templates) {
 	require_once DIR_CON.'/component/oauth/facebook/Facebook/autoload.php';
 
-	$currentOauthfb = $core->podb->from('oauth')->fetchAll();
+	$currentOauthfb = $core->db->from('oauth')->fetchAll();
 	$appIdOauthfb = $currentOauthfb[0]['oauth_key'];
 	$secretOauthfb = $currentOauthfb[0]['oauth_secret'];
 
@@ -725,7 +725,7 @@ $router->match('GET|POST', '/member/login/facebook', function() use ($core, $tem
 $router->match('GET|POST', '/member/login/twitter', function() use ($core, $templates) {
 	require_once DIR_CON.'/component/oauth/twitter/Twitter/twitteroauth.php';
 
-	$currentOauthtw = $core->podb->from('oauth')->fetchAll();
+	$currentOauthtw = $core->db->from('oauth')->fetchAll();
 	$conkeyOauthtw = $currentOauthtw[1]['oauth_key'];
 	$consecretOauthtw = $currentOauthtw[1]['oauth_secret'];
 
@@ -748,19 +748,19 @@ $router->match('GET|POST', '/member/login/twitter', function() use ($core, $temp
 		unset($_SESSION['oauth_token']);
 		unset($_SESSION['oauth_token_secret']);
 
-		$user_count = $core->podb->from('users')
+		$user_count = $core->db->from('users')
 			->where('username', strtolower(str_replace(' ', '', $twusername)))
 			->where('level', '4')
 			->where('block', 'Y')
 			->count();
 		if ($user_count > 0) {
-			$user_data = $core->podb->from('users')
+			$user_data = $core->db->from('users')
 				->where('username', strtolower(str_replace(' ', '', $twusername)))
 				->where('level', '4')
 				->where('block', 'Y')
 				->limit(1)
 				->fetch();
-			$timeout = new PoTimeout;
+			$timeout = new Timeout;
 			$timeout->rec_session_member($user_data);
 			$timeout->timer_member();
 			$sid_lama = session_id();
@@ -769,13 +769,13 @@ $router->match('GET|POST', '/member/login/twitter', function() use ($core, $temp
 			$sesi = array(
 				'id_session' => $sid_baru
 			);
-			$query = $core->podb->update('users')
+			$query = $core->db->update('users')
 				->set($sesi)
 				->where('username', strtolower(str_replace(' ', '', $twusername)));
 			$query->execute();
 			header('location:'.BASE_URL.'/member');
 		} else {
-			$last_user = $core->podb->from('users')->limit(1)->orderBy('id_user DESC')->fetch();
+			$last_user = $core->db->from('users')->limit(1)->orderBy('id_user DESC')->fetch();
 			$data = array(
 				'id_user' => $last_user['id_user']+1,
 				'username' => strtolower(str_replace(' ', '', $twusername)),
@@ -790,15 +790,15 @@ $router->match('GET|POST', '/member/login/twitter', function() use ($core, $temp
 				'block' => 'Y',
 				'id_session' => md5($twuserid)
 			);
-			$query = $core->podb->insertInto('users')->values($data);
+			$query = $core->db->insertInto('users')->values($data);
 			$query->execute();
-			$user_data = $core->podb->from('users')
+			$user_data = $core->db->from('users')
 				->where('username', strtolower(str_replace(' ', '', $twusername)))
 				->where('level', '4')
 				->where('block', 'Y')
 				->limit(1)
 				->fetch();
-			$timeout = new PoTimeout;
+			$timeout = new Timeout;
 			$timeout->rec_session_member($user_data);
 			$timeout->timer_member();
 			header('location:'.BASE_URL.'/member');
@@ -855,30 +855,30 @@ $router->match('GET|POST', '/feed', function() use ($core, $templates) {
 	$channel_node = $rss_node->appendChild($channel);
 
 	//Add general elements under "channel" node
-	$channel_node->appendChild($xml->createElement("title", $core->posetting[0]['value'])); //title
+	$channel_node->appendChild($xml->createElement("title", $core->setting[0]['value'])); //title
 
 	//A feed should contain an atom:link element
 	$channel_atom_link = $xml->createElement("atom:link");
-	$channel_atom_link->setAttribute("href", $core->posetting[1]['value'].'/feed'); //url of the feed
+	$channel_atom_link->setAttribute("href", $core->setting[1]['value'].'/feed'); //url of the feed
 	$channel_atom_link->setAttribute("rel", "self");
 	$channel_atom_link->setAttribute("type", "application/rss+xml");
 	$channel_node->appendChild($channel_atom_link);
 
 	//Add general elements under "channel" node
-	$channel_node->appendChild($xml->createElement("link", $core->posetting[1]['value'])); //website link
-	$channel_node->appendChild($xml->createElement("description", $core->posetting[2]['value']));  //description
+	$channel_node->appendChild($xml->createElement("link", $core->setting[1]['value'])); //website link
+	$channel_node->appendChild($xml->createElement("description", $core->setting[2]['value']));  //description
 	$channel_node->appendChild($xml->createElement("lastBuildDate", $build_date));  //last build date
 	$channel_node->appendChild($xml->createElement("language", strtolower(WEB_LANG).'-'.strtoupper(WEB_LANG)));  //language
-	$channel_node->appendChild($xml->createElement("generator", "http://www.popojicms.org")); //generator
+	$channel_node->appendChild($xml->createElement("generator", "http://imronreviady.github.io")); //generator
 
 	//Add general elements under "channel" node
 	$image_node = $channel_node->appendChild($xml->createElement("image"));
 	$url_image_node = $image_node->appendChild($xml->createElement("url", BASE_URL.'/'.DIR_INC.'/images/favicon.png'));
-	$title_image_node = $image_node->appendChild($xml->createElement("title", $core->posetting[0]['value']));
-	$link_image_node = $image_node->appendChild($xml->createElement("link", $core->posetting[1]['value']));
+	$title_image_node = $image_node->appendChild($xml->createElement("title", $core->setting[0]['value']));
+	$link_image_node = $image_node->appendChild($xml->createElement("link", $core->setting[1]['value']));
 
 	//Fetch records from the database
-	$recents = $core->podb->from('post')
+	$recents = $core->db->from('post')
 		->select(array('post_description.title', 'post_description.content'))
 		->leftJoin('post_description ON post_description.id_post = post.id_post')
 		->where('post_description.id_language', WEB_LANG_ID)
@@ -890,10 +890,10 @@ $router->match('GET|POST', '/feed', function() use ($core, $templates) {
 	foreach($recents as $recent) {
 		$item_node = $channel_node->appendChild($xml->createElement("item")); //create a new node called "item"
 		$title_node = $item_node->appendChild($xml->createElement("title", $recent['title'])); //Add Title under "item"
-		$link_node = $item_node->appendChild($xml->createElement("link", $core->postring->permalink(rtrim(BASE_URL, '/'), $recent))); //add link node under "item"
+		$link_node = $item_node->appendChild($xml->createElement("link", $core->string->permalink(rtrim(BASE_URL, '/'), $recent))); //add link node under "item"
 
 		//Unique identifier for the item (GUID)
-		$guid_link = $xml->createElement("guid", $core->postring->permalink(rtrim(BASE_URL, '/'), $recent));
+		$guid_link = $xml->createElement("guid", $core->string->permalink(rtrim(BASE_URL, '/'), $recent));
 		$guid_link->setAttribute("isPermaLink", "false");
 		$guid_node = $item_node->appendChild($guid_link);
 
@@ -901,7 +901,7 @@ $router->match('GET|POST', '/feed', function() use ($core, $templates) {
 		$description_node = $item_node->appendChild($xml->createElement("description"));
 
 		//Fill description node with CDATA content
-		$description_contents = $xml->createCDATASection($core->postring->cuthighlight('post', $recent['content'], '250').'...');
+		$description_contents = $xml->createCDATASection($core->string->cuthighlight('post', $recent['content'], '250').'...');
 		$description_node->appendChild($description_contents);
 
 		//Published date
@@ -911,7 +911,7 @@ $router->match('GET|POST', '/feed', function() use ($core, $templates) {
 
 		//Item media
 		$item_media = $xml->createElement("media:content");
-		$item_media->setAttribute("url", BASE_URL.'/po-content/thumbs/'.$recent['picture']);
+		$item_media->setAttribute("url", BASE_URL.'/content/thumbs/'.$recent['picture']);
 		$item_media->setAttribute("medium", "image");
 		$item_media_node = $item_node->appendChild($item_media);
 		$media_title = $xml->createElement("media:title", $recent['title']);

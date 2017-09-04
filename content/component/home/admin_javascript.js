@@ -1,6 +1,6 @@
 /*
  *
- * - PopojiCMS Javascript
+ * - BijiCMS Javascript
  *
  * - File : admin_javascript.js
  * - Version : 1.0
@@ -8,8 +8,8 @@
  * - License : MIT License
  *
  *
- * Ini adalah file utama javascript PopojiCMS yang memuat semua javascript di home.
- * This is a main javascript file from PopojiCMS which contains all javascript in home.
+ * Ini adalah file utama javascript BijiCMS yang memuat semua javascript di home.
+ * This is a main javascript file from BijiCMS which contains all javascript in home.
  *
 */
 

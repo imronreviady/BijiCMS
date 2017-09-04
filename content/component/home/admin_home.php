@@ -1,11 +1,11 @@
 <?php
 /*
  *
- * - PopojiCMS Admin File
+ * - BijiCMS Admin File
  *
  * - File : admin_home.php
  * - Version : 1.3
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
@@ -36,7 +36,7 @@ if (empty($_SESSION['namauser']) AND empty($_SESSION['passuser']) AND $_SESSION[
 	exit;
 }
 
-class Home extends PoCore
+class Home extends Core
 {
 
 	/**
@@ -65,7 +65,7 @@ class Home extends PoCore
 				</div>
 			</div>
 			<?php
-				$notif_post = $this->podb->from('post')
+				$notif_post = $this->db->from('post')
 					->select('users.level')
 					->leftJoin('users ON users.id_user = post.editor')
 					->where('post.active', 'N')
@@ -84,7 +84,7 @@ class Home extends PoCore
 			</div>
 			<?php } ?>
 			<?php
-				$notif_comment = $this->podb->from('comment')
+				$notif_comment = $this->db->from('comment')
 					->where('status', 'N')
 					->count();
 				if ($notif_comment > 0) {
@@ -100,7 +100,7 @@ class Home extends PoCore
 			</div>
 			<?php } ?>
 			<?php
-				$notif_contact = $this->podb->from('contact')
+				$notif_contact = $this->db->from('contact')
 					->where('status', 'N')
 					->count();
 				if ($notif_contact > 0) {
@@ -120,7 +120,7 @@ class Home extends PoCore
 					<div class="mini-stats">
 						<a href="admin.php?mod=post"><span class="bg-info"><i class="fa fa-book"></i></span></a>
 						<p><?=$GLOBALS['_']['post'];?></p>
-						<h3><?=$this->podb->from('post')->count();?></h3>
+						<h3><?=$this->db->from('post')->count();?></h3>
 					</div>
 				</div>
 			</div>
@@ -129,7 +129,7 @@ class Home extends PoCore
 					<div class="mini-stats">
 						<a href="admin.php?mod=category"><span class="bg-danger"><i class="fa fa-tasks"></i></span></a>
 						<p><?=$GLOBALS['_']['category'];?></p>
-						<h3><?=$this->podb->from('category')->count();?></h3>
+						<h3><?=$this->db->from('category')->count();?></h3>
 					</div>
 				</div>
 			</div>
@@ -138,7 +138,7 @@ class Home extends PoCore
 					<div class="mini-stats">
 						<a href="admin.php?mod=tag"><span class="bg-success"><i class="fa fa-tags"></i></span></a>
 						<p><?=$GLOBALS['_']['tag'];?></p>
-						<h3><?=$this->podb->from('tag')->count();?></h3>
+						<h3><?=$this->db->from('tag')->count();?></h3>
 					</div>
 				</div>
 			</div>
@@ -147,7 +147,7 @@ class Home extends PoCore
 					<div class="mini-stats">
 						<a href="admin.php?mod=comment"><span class="bg-warning"><i class="fa fa-comments"></i></span></a>
 						<p><?=$GLOBALS['_']['comment'];?></p>
-						<h3><?=$this->podb->from('comment')->count();?></h3>
+						<h3><?=$this->db->from('comment')->count();?></h3>
 					</div>
 				</div>
 			</div>
@@ -156,7 +156,7 @@ class Home extends PoCore
 					<div class="mini-stats">
 						<a href="admin.php?mod=pages"><span class="bg-warning"><i class="fa fa-file"></i></span></a>
 						<p><?=$GLOBALS['_']['pages'];?></p>
-						<h3><?=$this->podb->from('pages')->count();?></h3>
+						<h3><?=$this->db->from('pages')->count();?></h3>
 					</div>
 				</div>
 			</div>
@@ -165,7 +165,7 @@ class Home extends PoCore
 					<div class="mini-stats">
 						<a href="admin.php?mod=component"><span class="bg-success"><i class="fa fa-puzzle-piece"></i></span></a>
 						<p><?=$GLOBALS['_']['component'];?></p>
-						<h3><?=$this->podb->from('component')->count();?></h3>
+						<h3><?=$this->db->from('component')->count();?></h3>
 					</div>
 				</div>
 			</div>
@@ -174,7 +174,7 @@ class Home extends PoCore
 					<div class="mini-stats">
 						<a href="admin.php?mod=theme"><span class="bg-danger"><i class="fa fa-desktop"></i></span></a>
 						<p><?=$GLOBALS['_']['theme'];?></p>
-						<h3><?=$this->podb->from('theme')->count();?></h3>
+						<h3><?=$this->db->from('theme')->count();?></h3>
 					</div>
 				</div>
 			</div>
@@ -183,7 +183,7 @@ class Home extends PoCore
 					<div class="mini-stats">
 						<a href="admin.php?mod=user"><span class="bg-info"><i class="fa fa-group"></i></span></a>
 						<p><?=$GLOBALS['_']['user'];?></p>
-						<h3><?=$this->podb->from('users')->count();?></h3>
+						<h3><?=$this->db->from('users')->count();?></h3>
 					</div>
 				</div>
 			</div>
@@ -199,7 +199,7 @@ class Home extends PoCore
 					</div>
 					<div class="popular-post-desc">
 						<?php
-							$post_pops = $this->podb->from('post')
+							$post_pops = $this->db->from('post')
 								->select('post_description.title')
 								->leftJoin('post_description ON post_description.id_post = post.id_post')
 								->where('post_description.id_language', '1')
@@ -211,14 +211,14 @@ class Home extends PoCore
 						<div class="media">
 							<?php if ($post_pop['picture'] != '') { ?>
 							<div class="media-left">
-								<a href="<?=$this->postring->permalink(rtrim(WEB_URL, '/'), $post_pop);?>" target="_blank">
-									<img class="media-object" src="../po-content/thumbs/<?=$post_pop['picture'];?>" width="64" />
+								<a href="<?=$this->string->permalink(rtrim(WEB_URL, '/'), $post_pop);?>" target="_blank">
+									<img class="media-object" src="../content/thumbs/<?=$post_pop['picture'];?>" width="64" />
 								</a>
 							</div>
 							<?php } ?>
 							<div class="media-body">
 								<span><?=date('d M Y', strtotime($post_pop['date']));?> - <?=$GLOBALS['_']['home_popular_view'];?> <?=$post_pop['hits'];?> <?=$GLOBALS['_']['home_popular_times'];?></span>
-								<a href="<?=$this->postring->permalink(rtrim(WEB_URL, '/'), $post_pop);?>" target="_blank"><?=$post_pop['title'];?></a>
+								<a href="<?=$this->string->permalink(rtrim(WEB_URL, '/'), $post_pop);?>" target="_blank"><?=$post_pop['title'];?></a>
 							</div>
 						</div>
 						<?php } ?>
@@ -256,21 +256,21 @@ class Home extends PoCore
 								$hend = 6;
 								for($i = $hend; $i >= $hstart; $i--){
 									if ($i==0) {
-										$visitorstemp = $this->podb->from('traffic')
+										$visitorstemp = $this->db->from('traffic')
 											->where('date', date('Y-m-d'))
 											->groupBy('ip')
 											->fetchAll();
-										$hitstemp = $this->podb->from('traffic')
+										$hitstemp = $this->db->from('traffic')
 											->select('SUM(hits) as hitstoday')
 											->where('date', date('Y-m-d'))
 											->groupBy('date')
 											->fetch();
 									} else {
-										$visitorstemp = $this->podb->from('traffic')
+										$visitorstemp = $this->db->from('traffic')
 											->where('date', date('Y-m-d', strtotime('-'.$i.' days')))
 											->groupBy('ip')
 											->fetchAll();
-										$hitstemp = $this->podb->from('traffic')
+										$hitstemp = $this->db->from('traffic')
 											->select('SUM(hits) as hitstoday')
 											->where('date', date('Y-m-d', strtotime('-'.$i.' days')))
 											->groupBy('date')
@@ -286,7 +286,7 @@ class Home extends PoCore
 
 							case "chartmonth":
 								$hstart = 0;
-								$lastend = $this->podb->from('traffic')
+								$lastend = $this->db->from('traffic')
 									->select('SUM(hits) as hitstotal,count(date) as unikvisitor')
 									->where('MONTH(date) = ?', date('m'))
 									->groupBy('date')
@@ -294,7 +294,7 @@ class Home extends PoCore
 									->fetch();
 								$hend = date('j', strtotime($lastend['date']));
 								for($i = $hend; $i > $hstart; $i--){
-									$stats = $this->podb->from('traffic')
+									$stats = $this->db->from('traffic')
 										->select('SUM(hits) as hitstotal, count(date) as unikvisitor')
 										->where('MONTH(date) = ?', date('m'))
 										->where('DAY(date) = ?', "0".$i)
@@ -315,7 +315,7 @@ class Home extends PoCore
 
 							case "chartyear":
 								$hstart = 0;
-								$lastend = $this->podb->from('traffic')
+								$lastend = $this->db->from('traffic')
 									->select('SUM(hits) as hitstotal, count(date) as unikvisitor')
 									->where('YEAR(date) = ?', date('Y'))
 									->groupBy('MONTH(date)')
@@ -323,7 +323,7 @@ class Home extends PoCore
 									->fetch();
 								$hend = date('n', strtotime($lastend['date']));
 								for($i = $hend; $i > $hstart; $i--){
-									$stats = $this->podb->from('traffic')
+									$stats = $this->db->from('traffic')
 										->select('SUM(hits) as hitstotal, count(date) as unikvisitor')
 										->where('YEAR(date) = ?', date('Y'))
 										->where('MONTH(date) = ?', "0".$i)
@@ -394,7 +394,7 @@ class Home extends PoCore
 		<div class="block-content">
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->headTitle($GLOBALS['_']['home_stats']);?>
+					<?=$this->html->headTitle($GLOBALS['_']['home_stats']);?>
 				</div>
 			</div>
 			<div class="row">
@@ -432,8 +432,8 @@ class Home extends PoCore
 						$end_stats = strtotime($_GET['to']);
 						while ($current_stats <= $end_stats) {
 							$label_stats[] = date('d M', $current_stats);
-							$visitor_stats[] = $this->podb->from('traffic')->where('date', date('Y-m-d', $current_stats))->groupBy('ip')->count();
-							$hits_stats[] = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d', $current_stats))->groupBy('date')->fetch()['hitstoday'];
+							$visitor_stats[] = $this->db->from('traffic')->where('date', date('Y-m-d', $current_stats))->groupBy('ip')->count();
+							$hits_stats[] = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d', $current_stats))->groupBy('date')->fetch()['hitstoday'];
 							$current_stats = strtotime('+1 days', $current_stats);
 						}
 					?>
@@ -466,20 +466,20 @@ class Home extends PoCore
 					</script>
 					<?php } else { ?>
 					<?php
-						$visitor1 = $this->podb->from('traffic')->where('date', date('Y-m-d', strtotime('-6 days')))->groupBy('ip')->fetchAll();
-						$visitor2 = $this->podb->from('traffic')->where('date', date('Y-m-d', strtotime('-5 days')))->groupBy('ip')->fetchAll();
-						$visitor3 = $this->podb->from('traffic')->where('date', date('Y-m-d', strtotime('-4 days')))->groupBy('ip')->fetchAll();
-						$visitor4 = $this->podb->from('traffic')->where('date', date('Y-m-d', strtotime('-3 days')))->groupBy('ip')->fetchAll();
-						$visitor5 = $this->podb->from('traffic')->where('date', date('Y-m-d', strtotime('-2 days')))->groupBy('ip')->fetchAll();
-						$visitor6 = $this->podb->from('traffic')->where('date', date('Y-m-d', strtotime('-1 days')))->groupBy('ip')->fetchAll();
-						$visitor7 = $this->podb->from('traffic')->where('date', date('Y-m-d'))->groupBy('ip')->fetchAll();
-						$hits1 = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d', strtotime('-6 days')))->groupBy('date')->fetch();
-						$hits2 = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d', strtotime('-5 days')))->groupBy('date')->fetch();
-						$hits3 = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d', strtotime('-4 days')))->groupBy('date')->fetch();
-						$hits4 = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d', strtotime('-3 days')))->groupBy('date')->fetch();
-						$hits5 = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d', strtotime('-2 days')))->groupBy('date')->fetch();
-						$hits6 = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d', strtotime('-1 days')))->groupBy('date')->fetch();
-						$hits7 = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d'))->groupBy('date')->fetch();
+						$visitor1 = $this->db->from('traffic')->where('date', date('Y-m-d', strtotime('-6 days')))->groupBy('ip')->fetchAll();
+						$visitor2 = $this->db->from('traffic')->where('date', date('Y-m-d', strtotime('-5 days')))->groupBy('ip')->fetchAll();
+						$visitor3 = $this->db->from('traffic')->where('date', date('Y-m-d', strtotime('-4 days')))->groupBy('ip')->fetchAll();
+						$visitor4 = $this->db->from('traffic')->where('date', date('Y-m-d', strtotime('-3 days')))->groupBy('ip')->fetchAll();
+						$visitor5 = $this->db->from('traffic')->where('date', date('Y-m-d', strtotime('-2 days')))->groupBy('ip')->fetchAll();
+						$visitor6 = $this->db->from('traffic')->where('date', date('Y-m-d', strtotime('-1 days')))->groupBy('ip')->fetchAll();
+						$visitor7 = $this->db->from('traffic')->where('date', date('Y-m-d'))->groupBy('ip')->fetchAll();
+						$hits1 = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d', strtotime('-6 days')))->groupBy('date')->fetch();
+						$hits2 = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d', strtotime('-5 days')))->groupBy('date')->fetch();
+						$hits3 = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d', strtotime('-4 days')))->groupBy('date')->fetch();
+						$hits4 = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d', strtotime('-3 days')))->groupBy('date')->fetch();
+						$hits5 = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d', strtotime('-2 days')))->groupBy('date')->fetch();
+						$hits6 = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d', strtotime('-1 days')))->groupBy('date')->fetch();
+						$hits7 = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d'))->groupBy('date')->fetch();
 					?>
 					<script type="text/javascript">
 						var datastats = {
@@ -534,7 +534,7 @@ class Home extends PoCore
 							<a href="javascript:void(0)"><span class="bg-success"><i class="fa fa-eye"></i></span></a>
 							<p><?=$GLOBALS['_']['home_online_today'];?></p>
 							<?php $todaytime = time()-300; ?>
-							<h3><?=$this->podb->from('traffic')->where('date', date('Y-m-d'))->where('online > "'.$todaytime.'"')->count();?></h3>
+							<h3><?=$this->db->from('traffic')->where('date', date('Y-m-d'))->where('online > "'.$todaytime.'"')->count();?></h3>
 						</div>
 					</div>
 				</div>
@@ -545,21 +545,21 @@ class Home extends PoCore
 							<p><?=$GLOBALS['_']['home_visitors'];?></p>
 							<?php
 								if (isset($_GET['from']) && isset($_GET['to'])) {
-									$condvisitor = $this->podb->from('traffic')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->groupBy('ip')->count();
+									$condvisitor = $this->db->from('traffic')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->groupBy('ip')->count();
 									if (empty($condvisitor)) {
 										$counttotalvisitor = '0';
 									} else {
-										$counttotalvisitor = $this->podb->from('traffic')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->groupBy('ip')->count();
+										$counttotalvisitor = $this->db->from('traffic')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->groupBy('ip')->count();
 								}
 							?>
 							<h3><?=$counttotalvisitor;?></h3>
 							<?php
 								} else {
-									$condvisitor = $this->podb->from('traffic')->where('date', date('Y-m-d'))->groupBy('ip')->fetchAll();
+									$condvisitor = $this->db->from('traffic')->where('date', date('Y-m-d'))->groupBy('ip')->fetchAll();
 									if (empty($condvisitor)) {
 										$counttotalvisitor = '0';
 									} else {
-										$counttotalvisitor = count($this->podb->from('traffic')->where('date', date('Y-m-d'))->groupBy('ip')->fetchAll());
+										$counttotalvisitor = count($this->db->from('traffic')->where('date', date('Y-m-d'))->groupBy('ip')->fetchAll());
 									}
 							?>
 							<h3><?=$counttotalvisitor;?></h3>
@@ -574,21 +574,21 @@ class Home extends PoCore
 							<p><?=$GLOBALS['_']['home_hits'];?></p>
 							<?php
 								if (isset($_GET['from']) && isset($_GET['to'])) {
-									$condhits = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->fetch()['hitstoday'];
+									$condhits = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->fetch()['hitstoday'];
 									if (empty($condhits)) {
 										$counttotalhits = '0';
 									} else {
-										$counttotalhits = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->fetch()['hitstoday'];
+										$counttotalhits = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->fetch()['hitstoday'];
 									}
 							?>
 							<h3><?=$counttotalhits;?></h3>
 							<?php
 								} else {
-									$condhits = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d'))->fetch()['hitstoday'];
+									$condhits = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d'))->fetch()['hitstoday'];
 									if (empty($condhits)) {
 										$counttotalhits = '0';
 									} else {
-										$counttotalhits = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d'))->fetch()['hitstoday'];
+										$counttotalhits = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d'))->fetch()['hitstoday'];
 									}
 							?>
 							<h3><?=$counttotalhits;?></h3>
@@ -617,9 +617,9 @@ class Home extends PoCore
 							<?php
 								$novisitor = 1;
 								if (isset($_GET['from']) && isset($_GET['to'])) {
-									$visitors = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->orderBy('hitstoday DESC')->groupBy('ip')->limit(10)->fetchAll();
+									$visitors = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->orderBy('hitstoday DESC')->groupBy('ip')->limit(10)->fetchAll();
 								} else {
-									$visitors = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d'))->orderBy('hitstoday DESC')->groupBy('ip')->limit(10)->fetchAll();
+									$visitors = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d'))->orderBy('hitstoday DESC')->groupBy('ip')->limit(10)->fetchAll();
 								}
 								foreach($visitors as $visitor){
 							?>
@@ -652,9 +652,9 @@ class Home extends PoCore
 							<?php
 								$nobrowser = 1;
 								if (isset($_GET['from']) && isset($_GET['to'])) {
-									$browsers = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->orderBy('hitstoday DESC')->groupBy('browser')->fetchAll();
+									$browsers = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->orderBy('hitstoday DESC')->groupBy('browser')->fetchAll();
 								} else {
-									$browsers = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d'))->orderBy('hitstoday DESC')->groupBy('browser')->fetchAll();
+									$browsers = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d'))->orderBy('hitstoday DESC')->groupBy('browser')->fetchAll();
 								}
 								foreach($browsers as $browser){
 							?>
@@ -681,9 +681,9 @@ class Home extends PoCore
 							<?php
 								$noplatform = 1;
 								if (isset($_GET['from']) && isset($_GET['to'])) {
-									$platforms = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->orderBy('hitstoday DESC')->groupBy('platform')->fetchAll();
+									$platforms = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->orderBy('hitstoday DESC')->groupBy('platform')->fetchAll();
 								} else {
-									$platforms = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d'))->orderBy('hitstoday DESC')->groupBy('platform')->fetchAll();
+									$platforms = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d'))->orderBy('hitstoday DESC')->groupBy('platform')->fetchAll();
 								}
 								foreach($platforms as $platform){
 							?>
@@ -712,9 +712,9 @@ class Home extends PoCore
 							<?php
 								$nocountry = 1;
 								if (isset($_GET['from']) && isset($_GET['to'])) {
-									$countrys = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->orderBy('hitstoday DESC')->groupBy('country')->limit(10)->fetchAll();
+									$countrys = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->orderBy('hitstoday DESC')->groupBy('country')->limit(10)->fetchAll();
 								} else {
-									$countrys = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d'))->orderBy('hitstoday DESC')->groupBy('country')->limit(10)->fetchAll();
+									$countrys = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d'))->orderBy('hitstoday DESC')->groupBy('country')->limit(10)->fetchAll();
 								}
 								foreach($countrys as $country){
 							?>
@@ -741,9 +741,9 @@ class Home extends PoCore
 							<?php
 								$nocity = 1;
 								if (isset($_GET['from']) && isset($_GET['to'])) {
-									$citys = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->orderBy('hitstoday DESC')->groupBy('city')->limit(10)->fetchAll();
+									$citys = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date BETWEEN "'.$_GET['from'].'" AND "'.$_GET['to'].'"')->orderBy('hitstoday DESC')->groupBy('city')->limit(10)->fetchAll();
 								} else {
-									$citys = $this->podb->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d'))->orderBy('hitstoday DESC')->groupBy('city')->limit(10)->fetchAll();
+									$citys = $this->db->from('traffic')->select('SUM(hits) as hitstoday')->where('date', date('Y-m-d'))->orderBy('hitstoday DESC')->groupBy('city')->limit(10)->fetchAll();
 								}
 								foreach($citys as $city){
 							?>
