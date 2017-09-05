@@ -3,11 +3,11 @@ session_start();
 if (empty($_SESSION['namauser']) AND empty($_SESSION['passuser']) AND $_SESSION['login'] == 0) {
 	header('location:../../../../.');
 } else {
-include_once '../../../../po-includes/core/core.php';
+include_once '../../../../includes/core/core.php';
 require_once 'Twitter/twitteroauth.php';
 
-$tableoauthtw = new PoCore();
-$currentOauthtw = $tableoauthtw->podb->from('oauth')->fetchAll();
+$tableoauthtw = new Core();
+$currentOauthtw = $tableoauthtw->db->from('oauth')->fetchAll();
 $conkeyOauthtw = $currentOauthtw[1]['oauth_key'];
 $consecretOauthtw = $currentOauthtw[1]['oauth_secret'];
 

@@ -3,11 +3,11 @@ session_start();
 if (empty($_SESSION['namauser']) AND empty($_SESSION['passuser']) AND $_SESSION['login'] == 0) {
 	header('location:../../../../.');
 } else {
-include_once '../../../../po-includes/core/core.php';
+include_once '../../../../includes/core/core.php';
 require_once 'Twitter/twitteroauth.php';
 
-$tableoauthtw = new PoCore();
-$currentOauthtw = $tableoauthtw->podb->from('oauth')->fetchAll();
+$tableoauthtw = new Core();
+$currentOauthtw = $tableoauthtw->db->from('oauth')->fetchAll();
 $conkeyOauthtw = $currentOauthtw[1]['oauth_key'];
 $consecretOauthtw = $currentOauthtw[1]['oauth_secret'];
 
@@ -42,9 +42,9 @@ if ($connection->http_code == 200) {
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="Connect twitter to your website for automatic publish content to twitter from your post">
-		<meta name="author" content="PopojiCMS">
+		<meta name="author" content="BijiCMS">
 		<link rel="shortcut icon" href="../../../../<?=DIR_INC;?>/images/favicon.png">
-		<title>PopojiCMSOAuth 2.0 - Twitter</title>
+		<title>BijiCMSOAuth 2.0 - Twitter</title>
 		<!-- Bootstrap core CSS -->
 		<link href="../../../../<?=DIR_INC;?>/css/bootstrap.min.css" rel="stylesheet">
 		<link href="http://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
@@ -84,7 +84,7 @@ if ($connection->http_code == 200) {
 	</head>
 	<body>
 		<div class="jumbotron text-center">
-			<h1>PopojiCMSOAuth 2.0</h1>
+			<h1>BijiCMSOAuth 2.0</h1>
 			<p>Connect twitter to your website for automatic publish<br />content to twitter from your post.</p>
 		</div>
 		<div class="container">
@@ -116,7 +116,7 @@ if ($connection->http_code == 200) {
 		</div>
 		<div id="footer">
 			<div class="container">
-				<p class="text-muted">PopojiCMSOAuth 2.0 &copy; 2014-2016. PopojiCMS Team. All Rights Reserved.</p>
+				<p class="text-muted">BijiCMSOAuth 2.0 &copy; 2014-2016. BijiCMS Team. All Rights Reserved.</p>
 			</div>
 		</div>
 		<script type="text/javascript" src="../../../../<?=DIR_INC;?>/js/jquery/jquery-2.1.4.min.js"></script>

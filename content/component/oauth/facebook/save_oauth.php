@@ -3,10 +3,10 @@ session_start();
 if (empty($_SESSION['namauser']) AND empty($_SESSION['passuser']) AND $_SESSION['login'] == 0) {
 	header('location:../../../../.');
 } else {
-include_once '../../../../po-includes/core/core.php';
+include_once '../../../../includes/core/core.php';
 require_once 'Facebook/autoload.php';
 if (!empty($_POST)) {
-	$tableoauthfb = new PoCore();
+	$tableoauthfb = new Core();
 	$fb_type = $_POST['fbtype'];
 	if ($fb_type == "user") {
 		$oauth = array(
@@ -23,11 +23,11 @@ if (!empty($_POST)) {
 			'oauth_fbtype' => $_POST['fbtype']
 		);
 	}
-	$query_setting = $tableoauthfb->podb->update('oauth')
+	$query_setting = $tableoauthfb->db->update('oauth')
 		->set($oauth)
 		->where('id_oauth', '1');
 	$query_setting->execute();
-	$tableoauthfb->poflash->success('OAuth has been successfully updated', WEB_URL.DIR_ADM.'/admin.php?mod=setting#oauth');
+	$tableoauthfb->flash->success('OAuth has been successfully updated', WEB_URL.DIR_ADM.'/admin.php?mod=setting#oauth');
 }
 }
 ?>

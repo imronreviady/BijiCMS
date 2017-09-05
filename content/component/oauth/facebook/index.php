@@ -3,11 +3,11 @@ session_start();
 if (empty($_SESSION['namauser']) AND empty($_SESSION['passuser']) AND $_SESSION['login'] == 0) {
 	header('location:../../../../.');
 } else {
-include_once '../../../../po-includes/core/core.php';
+include_once '../../../../includes/core/core.php';
 require_once 'Facebook/autoload.php';
 
-	$tableoauthfb = new PoCore();
-	$currentOauthfb = $tableoauthfb->podb->from('oauth')->fetchAll();
+	$tableoauthfb = new Core();
+	$currentOauthfb = $tableoauthfb->db->from('oauth')->fetchAll();
 	$appIdOauthfb = $currentOauthfb[0]['oauth_key'];
 	$secretOauthfb = $currentOauthfb[0]['oauth_secret'];
 
