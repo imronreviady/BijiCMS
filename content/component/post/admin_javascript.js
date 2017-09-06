@@ -1,15 +1,15 @@
 /*
  *
- * - PopojiCMS Javascript
+ * - BijiCMS Javascript
  *
  * - File : admin_javascript.js
  * - Version : 1.1
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
- * Ini adalah file utama javascript PopojiCMS yang memuat semua javascript di post.
- * This is a main javascript file from PopojiCMS which contains all javascript in post.
+ * Ini adalah file utama javascript BijiCMS yang memuat semua javascript di post.
+ * This is a main javascript file from BijiCMS which contains all javascript in post.
  *
 */
 
@@ -174,13 +174,13 @@ $(document).ready(function() {
 	$('.tiny-text').on('click', function (e) {
 		e.stopPropagation();
 		var id = $(this).attr("data-lang");
-		tinymce.EditorManager.execCommand('mceRemoveEditor',true, 'po-wysiwyg-'+id);
+		tinymce.EditorManager.execCommand('mceRemoveEditor',true, 'wysiwyg-'+id);
 	});
 
 	$('.tiny-visual').on('click', function (e) {
 		e.stopPropagation();
 		var id = $(this).attr("data-lang");
-		tinymce.EditorManager.execCommand('mceAddEditor',true, 'po-wysiwyg-'+id);
+		tinymce.EditorManager.execCommand('mceAddEditor',true, 'wysiwyg-'+id);
 	});
 });
 

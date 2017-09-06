@@ -1,11 +1,11 @@
 <?php
 /*
  *
- * - PopojiCMS Admin File
+ * - BijiCMS Admin File
  *
  * - File : admin_post.php
  * - Version : 1.1
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
@@ -36,7 +36,7 @@ if (empty($_SESSION['namauser']) AND empty($_SESSION['passuser']) AND $_SESSION[
 	exit;
 }
 
-class Post extends PoCore
+class Post extends Core
 {
 
 	/**
@@ -59,14 +59,14 @@ class Post extends PoCore
 	public function index()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'post', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		?>
 		<div class="block-content">
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->headTitle($GLOBALS['_']['component_name'], '
+					<?=$this->html->headTitle($GLOBALS['_']['component_name'], '
 						<div class="btn-title pull-right">
 							<a href="admin.php?mod=post&act=addnew" class="btn btn-success btn-sm"><i class="fa fa-plus"></i> '.$GLOBALS['_']['addnew'].'</a>
 							<a href="admin.php?mod=post&act=import" class="btn btn-info btn-sm"><i class="fa fa-download"></i> '.$GLOBALS['_']['post_import'].'</a>
@@ -76,8 +76,8 @@ class Post extends PoCore
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'route.php?mod=post&act=multidelete', 'autocomplete' => 'off'));?>
-						<?=$this->pohtml->inputHidden(array('name' => 'totaldata', 'value' => '0', 'options' => 'id="totaldata"'));?>
+					<?=$this->html->formStart(array('method' => 'post', 'action' => 'route.php?mod=post&act=multidelete', 'autocomplete' => 'off'));?>
+						<?=$this->html->inputHidden(array('name' => 'totaldata', 'value' => '0', 'options' => 'id="totaldata"'));?>
 						<?php
 							$columns = array(
 								array('title' => 'Id', 'options' => 'style="width:30px;"'),
@@ -87,12 +87,12 @@ class Post extends PoCore
 								array('title' => $GLOBALS['_']['post_action'], 'options' => 'class="no-sort" style="width:80px;"')
 							);
 						?>
-						<?=$this->pohtml->createTable(array('id' => 'table-post', 'class' => 'table table-striped table-bordered'), $columns, $tfoot = true);?>
-					<?=$this->pohtml->formEnd();?>
+						<?=$this->html->createTable(array('id' => 'table-post', 'class' => 'table table-striped table-bordered'), $columns, $tfoot = true);?>
+					<?=$this->html->formEnd();?>
 				</div>
 			</div>
 		</div>
-		<?=$this->pohtml->dialogDelete('post');?>
+		<?=$this->html->dialogDelete('post');?>
 		<?php
 	}
 
@@ -105,7 +105,7 @@ class Post extends PoCore
 	public function datatable()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'post', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		$table = 'post';
@@ -122,12 +122,12 @@ class Post extends PoCore
 			array('db' => 'p.'.$primarykey, 'dt' => '1', 'field' => $primarykey),
 			array('db' => 'p.'.$primarykey, 'dt' => '2', 'field' => $primarykey,
 				'formatter' => function($d, $row, $i){
-					$post_cats = $this->podb->from('post_category')
+					$post_cats = $this->db->from('post_category')
 						->where('id_post', $d)
 						->fetchAll();
 					$cats = '';
 					foreach($post_cats as $post_cat) {
-						$cat_desc = $this->podb->from('category_description')
+						$cat_desc = $this->db->from('category_description')
 							->where('id_category', $post_cat['id_category'])
 							->fetch();
 						$cats .= $cat_desc['title']." - ";
@@ -142,7 +142,7 @@ class Post extends PoCore
 					} else {
 						$headline = "<i class='fa fa-star'></i> {$GLOBALS['_']['post_not_headline']}";
 					}
-					return "".$d."<br /><i><a href='".$this->postring->permalink(rtrim(WEB_URL, '/'), array('id_post' => $row['id_post'], 'seotitle' => $row['seotitle'], 'date' => $row['date']))."' target='_blank'>".$this->postring->permalink(rtrim(WEB_URL, '/'), array('id_post' => $row['id_post'], 'seotitle' => $row['seotitle'], 'date' => $row['date']))."</a></i><br /><br />
+					return "".$d."<br /><i><a href='".$this->string->permalink(rtrim(WEB_URL, '/'), array('id_post' => $row['id_post'], 'seotitle' => $row['seotitle'], 'date' => $row['date']))."' target='_blank'>".$this->string->permalink(rtrim(WEB_URL, '/'), array('id_post' => $row['id_post'], 'seotitle' => $row['seotitle'], 'date' => $row['date']))."</a></i><br /><br />
 					<div class='btn-group btn-group-xs'>
                         <a class='btn btn-xs btn-default' style='font-size:11px;'><i class='fa fa-user'></i> ".$row['nama_lengkap']."</a>
 						<a class='btn btn-xs btn-default' style='font-size:11px;'><i class='fa fa-calendar'></i> ".date('d M y', strtotime($row['date']))."</a>
@@ -178,7 +178,7 @@ class Post extends PoCore
 		} else {
 			$extrawhere = "pd.id_language = '1' AND p.editor = '".$_SESSION['iduser']."'";
 		}
-		echo json_encode(SSP::simple($_POST, $this->poconnect, $table, $primarykey, $columns, $joinquery, $extrawhere));
+		echo json_encode(SSP::simple($_POST, $this->connect, $table, $primarykey, $columns, $joinquery, $extrawhere));
 	}
 
 	/**
@@ -190,14 +190,14 @@ class Post extends PoCore
 	public function addnew()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'post', 'create')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
 			if ($_POST['seotitle'] != "") {
 				$seotitle = $_POST['seotitle'];
 			} else {
-				$seotitle = $this->postring->seo_title($this->postring->valid($_POST['post'][1]['title'], 'xss'));
+				$seotitle = $this->string->seo_title($this->string->valid($_POST['post'][1]['title'], 'xss'));
 			}
 			if ($_SESSION['leveluser'] == '1' OR $_SESSION['leveluser'] == '2') {
 				$active = "Y";
@@ -206,31 +206,31 @@ class Post extends PoCore
 			}
 			$post = array(
 				'seotitle' => $seotitle,
-				'tag' => $this->postring->valid($_POST['tag'], 'xss'),
+				'tag' => $this->string->valid($_POST['tag'], 'xss'),
 				'picture' => $_POST['picture'],
 				'picture_description' => $_POST['picture_description'],
 				'date' => $_POST['publishdate'],
 				'time' => $_POST['publishtime'],
 				'publishdate' => $_POST['publishdate']." ".$_POST['publishtime'],
 				'editor' => $_SESSION['iduser'],
-				'comment' => $this->postring->valid($_POST['comment'], 'xss'),
+				'comment' => $this->string->valid($_POST['comment'], 'xss'),
 				'active' => $active
 			);
-			$query_post = $this->podb->insertInto('post')->values($post);
+			$query_post = $this->db->insertInto('post')->values($post);
 			$query_post->execute();
-			$expl = explode(",", $this->postring->valid($_POST['tag'], 'xss'));
+			$expl = explode(",", $this->string->valid($_POST['tag'], 'xss'));
 			$total = count($expl);
 			for($i=0; $i<$total; $i++){
-				$last_tag = $this->podb->from('tag')
+				$last_tag = $this->db->from('tag')
 					->where('tag_seo', $expl[$i])
 					->limit(1)
 					->fetch();
-				$query_tag = $this->podb->update('tag')
+				$query_tag = $this->db->update('tag')
 					->set(array('count' => $last_tag['count']+1))
 					->where('tag_seo', $expl[$i]);
 				$query_tag->execute();
 			}
-			$last_post = $this->podb->from('post')
+			$last_post = $this->db->from('post')
 				->orderBy('id_post DESC')
 				->limit(1)
 				->fetch();
@@ -241,7 +241,7 @@ class Post extends PoCore
 						'id_post' => $last_post['id_post'],
 						'id_category' => $id_category,
 					);
-					$query_category = $this->podb->insertInto('post_category')->values($category);
+					$query_category = $this->db->insertInto('post_category')->values($category);
 					$query_category->execute();
 				}
 			}
@@ -249,23 +249,23 @@ class Post extends PoCore
 				$post_description = array(
 					'id_post' => $last_post['id_post'],
 					'id_language' => $id_language,
-					'title' => $this->postring->valid($value['title'], 'xss'),
+					'title' => $this->string->valid($value['title'], 'xss'),
 					'content' => stripslashes(htmlspecialchars($value['content'],ENT_QUOTES))
 				);
-				$query_post_description = $this->podb->insertInto('post_description')->values($post_description);
+				$query_post_description = $this->db->insertInto('post_description')->values($post_description);
 				$query_post_description->execute();
 			}
-			$this->poflash->success($GLOBALS['_']['post_message_1'], 'admin.php?mod=post');
+			$this->flash->success($GLOBALS['_']['post_message_1'], 'admin.php?mod=post');
 		}
 		?>
 		<div class="block-content">
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->headTitle($GLOBALS['_']['post_addnew']);?>
+					<?=$this->html->headTitle($GLOBALS['_']['post_addnew']);?>
 				</div>
 			</div>
 			<div class="row">
-				<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'route.php?mod=post&act=addnew', 'autocomplete' => 'off'));?>
+				<?=$this->html->formStart(array('method' => 'post', 'action' => 'route.php?mod=post&act=addnew', 'autocomplete' => 'off'));?>
 					<div class="col-md-8" id="left-post">
 						<div class="row">
 							<div class="col-md-12">
@@ -275,7 +275,7 @@ class Post extends PoCore
 								<?php
 									$notab = 1;
 									$noctab = 1;
-									$langs = $this->podb->from('language')->where('active', 'Y')->orderBy('id_language ASC')->fetchAll();
+									$langs = $this->db->from('language')->where('active', 'Y')->orderBy('id_language ASC')->fetchAll();
 								?>
 								<ul class="nav nav-tabs">
 									<?php foreach($langs as $lang) { ?>
@@ -285,7 +285,7 @@ class Post extends PoCore
 								<div class="tab-content">
 									<?php foreach($langs as $lang) { ?>
 									<div class="tab-pane <?php echo ($noctab == '1' ? 'active' : ''); ?>" id="tab-content-<?=$lang['id_language'];?>">
-										<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_title_2'], 'name' => 'post['.$lang['id_language'].'][title]', 'id' => 'title-'.$lang['id_language'], 'mandatory' => true, 'options' => 'required'));?>
+										<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_title_2'], 'name' => 'post['.$lang['id_language'].'][title]', 'id' => 'title-'.$lang['id_language'], 'mandatory' => true, 'options' => 'required'));?>
 										<div class="form-group">
 											<label><?=$GLOBALS['_']['post_content'];?> <span class="text-danger">*</span></label>
 											<div class="row" style="margin-top:-30px;">
@@ -300,7 +300,7 @@ class Post extends PoCore
 													</div>
 												</div>
 											</div>
-											<textarea class="form-control" id="po-wysiwyg-<?=$lang['id_language'];?>" name="post[<?=$lang['id_language'];?>][content]" style="height:600px;"></textarea>
+											<textarea class="form-control" id="wysiwyg-<?=$lang['id_language'];?>" name="post[<?=$lang['id_language'];?>][content]" style="height:600px;"></textarea>
 										</div>
 									</div>
 									<?php $noctab++;} ?>
@@ -311,7 +311,7 @@ class Post extends PoCore
 					<div class="col-md-4" id="right-post">
 						<div class="row">
 							<div class="col-md-12">
-								<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_seotitle'], 'name' => 'seotitle', 'id' => 'seotitle', 'mandatory' => true, 'options' => 'required', 'help' => 'Permalink : '.WEB_URL.PERMALINK.'/<span id="permalink"></span>'));?>
+								<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_seotitle'], 'name' => 'seotitle', 'id' => 'seotitle', 'mandatory' => true, 'options' => 'required', 'help' => 'Permalink : '.WEB_URL.PERMALINK.'/<span id="permalink"></span>'));?>
 							</div>
 						</div>
 						<div class="row">
@@ -330,7 +330,7 @@ class Post extends PoCore
 						</div>
 						<div class="row">
 							<div class="col-md-12">
-								<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_tag'], 'name' => 'tag', 'id' => 'tag', 'mandatory' => false, 'options' => ''));?>
+								<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_tag'], 'name' => 'tag', 'id' => 'tag', 'mandatory' => false, 'options' => ''));?>
 								<div class="tag-option">
 									<div class="text-left"><a href="admin.php?mod=tag&act=addnew" target="_blank"><i class="fa fa-plus"></i> <?=$GLOBALS['_']['post_add_tag'];?></a></div>
 								</div>
@@ -338,20 +338,20 @@ class Post extends PoCore
 						</div>
 						<div class="row">
 							<div class="col-md-12">
-								<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_picture'], 'name' => 'picture', 'id' => 'picture'), $inputgroup = true, $inputgroupopt = array('href' => '../'.DIR_INC.'/js/filemanager/dialog.php?type=1&field_id=picture', 'id' => 'browse-file', 'class' => 'btn-success', 'options' => '', 'title' => $GLOBALS['_']['action_7'].' '.$GLOBALS['_']['post_picture']));?>
+								<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_picture'], 'name' => 'picture', 'id' => 'picture'), $inputgroup = true, $inputgroupopt = array('href' => '../'.DIR_INC.'/js/filemanager/dialog.php?type=1&field_id=picture', 'id' => 'browse-file', 'class' => 'btn-success', 'options' => '', 'title' => $GLOBALS['_']['action_7'].' '.$GLOBALS['_']['post_picture']));?>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-12">
-								<?=$this->pohtml->inputTextarea(array('label' => $GLOBALS['_']['post_picture_description'], 'name' => 'picture_description', 'id' => 'picture_description', 'class' => 'mceNoEditor', 'options' => 'rows="3" cols=""'));?>
+								<?=$this->html->inputTextarea(array('label' => $GLOBALS['_']['post_picture_description'], 'name' => 'picture_description', 'id' => 'picture_description', 'class' => 'mceNoEditor', 'options' => 'rows="3" cols=""'));?>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-6">
-								<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_date'], 'name' => 'publishdate', 'id' => 'publishdate', 'value' => date('Y-m-d'), 'mandatory' => true, 'options' => 'required'));?>
+								<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_date'], 'name' => 'publishdate', 'id' => 'publishdate', 'value' => date('Y-m-d'), 'mandatory' => true, 'options' => 'required'));?>
 							</div>
 							<div class="col-md-6">
-								<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_time'], 'name' => 'publishtime', 'id' => 'publishtime', 'value' => date('H:i:s'), 'mandatory' => true, 'options' => 'required'));?>
+								<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_time'], 'name' => 'publishtime', 'id' => 'publishtime', 'value' => date('H:i:s'), 'mandatory' => true, 'options' => 'required'));?>
 							</div>
 						</div>
 						<div class="row">
@@ -361,7 +361,7 @@ class Post extends PoCore
 										array('name' => 'comment', 'id' => 'comment', 'value' => 'Y', 'options' => 'checked', 'title' => 'Y'),
 										array('name' => 'comment', 'id' => 'comment', 'value' => 'N', 'options' => '', 'title' => 'N')
 									);
-									echo $this->pohtml->inputRadio(array('label' => $GLOBALS['_']['post_comment'], 'mandatory' => true), $radioitem, $inline = true);
+									echo $this->html->inputRadio(array('label' => $GLOBALS['_']['post_comment'], 'mandatory' => true), $radioitem, $inline = true);
 								?>
 							</div>
 						</div>
@@ -369,11 +369,11 @@ class Post extends PoCore
 					<div class="col-md-12">
 						<div class="row">
 							<div class="col-md-12">
-								<?=$this->pohtml->formAction();?>
+								<?=$this->html->formAction();?>
 							</div>
 						</div>
 					</div>
-				<?=$this->pohtml->formEnd();?>
+				<?=$this->html->formEnd();?>
 			</div>
 		</div>
 		<?php
@@ -388,96 +388,96 @@ class Post extends PoCore
 	public function edit()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'post', 'update')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
 			if ($_POST['seotitle'] != "") {
 				$seotitle = $_POST['seotitle'];
 			} else {
-				$seotitle = $this->postring->seo_title($this->postring->valid($_POST['post'][1]['title'], 'xss'));
+				$seotitle = $this->string->seo_title($this->string->valid($_POST['post'][1]['title'], 'xss'));
 			}
 			if ($_SESSION['leveluser'] == '1' OR $_SESSION['leveluser'] == '2') {
-				$active = $this->postring->valid($_POST['active'], 'xss');
+				$active = $this->string->valid($_POST['active'], 'xss');
 			} else {
 				$active = "N";
 			}
 			$post = array(
 				'seotitle' => $seotitle,
-				'tag' => $this->postring->valid($_POST['tag'], 'xss'),
+				'tag' => $this->string->valid($_POST['tag'], 'xss'),
 				'picture' => $_POST['picture'],
 				'picture_description' => $_POST['picture_description'],
 				'date' => $_POST['publishdate'],
 				'time' => $_POST['publishtime'],
 				'publishdate' => $_POST['publishdate']." ".$_POST['publishtime'],
-				'comment' => $this->postring->valid($_POST['comment'], 'xss'),
+				'comment' => $this->string->valid($_POST['comment'], 'xss'),
 				'active' => $active
 			);
-			$query_post = $this->podb->update('post')
+			$query_post = $this->db->update('post')
 				->set($post)
-				->where('id_post', $this->postring->valid($_POST['id'], 'sql'));
+				->where('id_post', $this->string->valid($_POST['id'], 'sql'));
 			$query_post->execute();
-			$expl = explode(",", $this->postring->valid($_POST['tag'], 'xss'));
+			$expl = explode(",", $this->string->valid($_POST['tag'], 'xss'));
 			$total = count($expl);
 			for($i=0; $i<$total; $i++){
-				$last_tag = $this->podb->from('tag')
+				$last_tag = $this->db->from('tag')
 					->where('tag_seo', $expl[$i])
 					->limit(1)
 					->fetch();
-				$query_tag = $this->podb->update('tag')
+				$query_tag = $this->db->update('tag')
 					->set(array('count' => $last_tag['count']+1))
 					->where('tag_seo', $expl[$i]);
 				$query_tag->execute();
 			}
-			$query_del_cats = $this->podb->deleteFrom('post_category')->where('id_post', $this->postring->valid($_POST['id'], 'sql'));
+			$query_del_cats = $this->db->deleteFrom('post_category')->where('id_post', $this->string->valid($_POST['id'], 'sql'));
 			$query_del_cats->execute();
 			$id_categorys = $_POST['id_category'];
 			if (!empty($_POST['id_category'])) {
 				foreach($id_categorys as $id_category){
 					$category = array(
-						'id_post' => $this->postring->valid($_POST['id'], 'sql'),
+						'id_post' => $this->string->valid($_POST['id'], 'sql'),
 						'id_category' => $id_category,
 					);
-					$query_category = $this->podb->insertInto('post_category')->values($category);
+					$query_category = $this->db->insertInto('post_category')->values($category);
 					$query_category->execute();
 				}
 			}
 			foreach ($_POST['post'] as $id_language => $value) {
-				$othlang_post = $this->podb->from('post_description')
-					->where('id_post', $this->postring->valid($_POST['id'], 'sql'))
+				$othlang_post = $this->db->from('post_description')
+					->where('id_post', $this->string->valid($_POST['id'], 'sql'))
 					->where('id_language', $id_language)
 					->count();
 				if ($othlang_post > 0) {
 					$post_description = array(
-						'title' => $this->postring->valid($value['title'], 'xss'),
+						'title' => $this->string->valid($value['title'], 'xss'),
 						'content' => stripslashes(htmlspecialchars($value['content'],ENT_QUOTES))
 					);
-					$query_post_description = $this->podb->update('post_description')
+					$query_post_description = $this->db->update('post_description')
 						->set($post_description)
-						->where('id_post_description', $this->postring->valid($value['id'], 'sql'));
+						->where('id_post_description', $this->string->valid($value['id'], 'sql'));
 				} else {
 					$post_description = array(
-						'id_post' => $this->postring->valid($_POST['id'], 'sql'),
+						'id_post' => $this->string->valid($_POST['id'], 'sql'),
 						'id_language' => $id_language,
-						'title' => $this->postring->valid($value['title'], 'xss'),
+						'title' => $this->string->valid($value['title'], 'xss'),
 						'content' => stripslashes(htmlspecialchars($value['content'],ENT_QUOTES))
 					);
-					$query_post_description = $this->podb->insertInto('post_description')->values($post_description);
+					$query_post_description = $this->db->insertInto('post_description')->values($post_description);
 				}
 				$query_post_description->execute();
 			}
-			$this->poflash->success($GLOBALS['_']['post_message_2'], 'admin.php?mod=post');
+			$this->flash->success($GLOBALS['_']['post_message_2'], 'admin.php?mod=post');
 		}
-		$id = $this->postring->valid($_GET['id'], 'sql');
+		$id = $this->string->valid($_GET['id'], 'sql');
 		if ($_SESSION['leveluser'] != '1' || $_SESSION['leveluser'] != '2') {
-			$current_post = $this->podb->from('post')
+			$current_post = $this->db->from('post')
 				->select('post_description.title')
 				->leftJoin('post_description ON post_description.id_post = post.id_post')
 				->where('post.id_post', $id)
 				->limit(1)
 				->fetch();
 		} else {
-			$current_post = $this->podb->from('post')
+			$current_post = $this->db->from('post')
 				->select('post_description.title')
 				->leftJoin('post_description ON post_description.id_post = post.id_post')
 				->where('post.id_post', $id)
@@ -486,20 +486,20 @@ class Post extends PoCore
 				->fetch();
 		}
 		if (empty($current_post)) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		?>
 		<div class="block-content">
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->headTitle($GLOBALS['_']['post_edit']);?>
+					<?=$this->html->headTitle($GLOBALS['_']['post_edit']);?>
 				</div>
 			</div>
 			<div class="row">
-				<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'route.php?mod=post&act=edit&id='.$current_post['id_post'], 'autocomplete' => 'off'));?>
+				<?=$this->html->formStart(array('method' => 'post', 'action' => 'route.php?mod=post&act=edit&id='.$current_post['id_post'], 'autocomplete' => 'off'));?>
 					<div class="col-md-8" id="left-post">
-						<?=$this->pohtml->inputHidden(array('name' => 'id', 'value' => $current_post['id_post'], 'options' => 'id="id_post"'));?>
+						<?=$this->html->inputHidden(array('name' => 'id', 'value' => $current_post['id_post'], 'options' => 'id="id_post"'));?>
 						<div class="row">
 							<div class="col-md-12">
 								<div class="pull-right">
@@ -508,7 +508,7 @@ class Post extends PoCore
 								<?php
 									$notab = 1;
 									$noctab = 1;
-									$langs = $this->podb->from('language')->where('active', 'Y')->orderBy('id_language ASC')->fetchAll();
+									$langs = $this->db->from('language')->where('active', 'Y')->orderBy('id_language ASC')->fetchAll();
 								?>
 								<ul class="nav nav-tabs">
 									<?php foreach($langs as $lang) { ?>
@@ -519,7 +519,7 @@ class Post extends PoCore
 									<?php foreach($langs as $lang) { ?>
 									<div class="tab-pane <?php echo ($noctab == '1' ? 'active' : ''); ?>" id="tab-content-<?=$lang['id_language'];?>">
 										<?php
-										$paglang = $this->podb->from('post_description')
+										$paglang = $this->db->from('post_description')
 											->where('post_description.id_post', $current_post['id_post'])
 											->where('post_description.id_language', $lang['id_language'])
 											->fetch();
@@ -533,8 +533,8 @@ class Post extends PoCore
 												$content_before
 											);
 										?>
-										<?=$this->pohtml->inputHidden(array('name' => 'post['.$lang['id_language'].'][id]', 'value' => $paglang['id_post_description']));?>
-										<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_title_2'], 'name' => 'post['.$lang['id_language'].'][title]', 'id' => 'title-'.$lang['id_language'], 'value' => $paglang['title'], 'mandatory' => true, 'options' => 'required'));?>
+										<?=$this->html->inputHidden(array('name' => 'post['.$lang['id_language'].'][id]', 'value' => $paglang['id_post_description']));?>
+										<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_title_2'], 'name' => 'post['.$lang['id_language'].'][title]', 'id' => 'title-'.$lang['id_language'], 'value' => $paglang['title'], 'mandatory' => true, 'options' => 'required'));?>
 										<div class="form-group">
 											<label><?=$GLOBALS['_']['post_content'];?> <span class="text-danger">*</span></label>
 											<div class="row" style="margin-top:-30px;">
@@ -549,7 +549,7 @@ class Post extends PoCore
 													</div>
 												</div>
 											</div>
-											<textarea class="form-control" id="po-wysiwyg-<?=$lang['id_language'];?>" name="post[<?=$lang['id_language'];?>][content]" style="height:600px;"><?=$content_after;?></textarea>
+											<textarea class="form-control" id="wysiwyg-<?=$lang['id_language'];?>" name="post[<?=$lang['id_language'];?>][content]" style="height:600px;"><?=$content_after;?></textarea>
 										</div>
 									</div>
 									<?php $noctab++;} ?>
@@ -560,7 +560,7 @@ class Post extends PoCore
 					<div class="col-md-4" id="right-post">
 						<div class="row">
 							<div class="col-md-12">
-								<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_seotitle'], 'name' => 'seotitle', 'id' => 'seotitle', 'value' => $current_post['seotitle'], 'mandatory' => true, 'options' => 'required', 'help' => 'Permalink : '.WEB_URL.PERMALINK.'/<span id="permalink">'.$current_post['seotitle'].'</span>'));?>
+								<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_seotitle'], 'name' => 'seotitle', 'id' => 'seotitle', 'value' => $current_post['seotitle'], 'mandatory' => true, 'options' => 'required', 'help' => 'Permalink : '.WEB_URL.PERMALINK.'/<span id="permalink">'.$current_post['seotitle'].'</span>'));?>
 							</div>
 						</div>
 						<div class="row">
@@ -579,7 +579,7 @@ class Post extends PoCore
 						</div>
 						<div class="row">
 							<div class="col-md-12">
-								<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_tag'], 'name' => 'tag', 'id' => 'tag', 'value' => $current_post['tag'], 'mandatory' => false, 'options' => ''));?>
+								<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_tag'], 'name' => 'tag', 'id' => 'tag', 'value' => $current_post['tag'], 'mandatory' => false, 'options' => ''));?>
 								<div class="tag-option">
 									<div class="text-left"><a href="admin.php?mod=tag&act=addnew" target="_blank"><i class="fa fa-plus"></i> <?=$GLOBALS['_']['post_add_tag'];?></a></div>
 								</div>
@@ -598,7 +598,7 @@ class Post extends PoCore
 										<?php } else { ?>
 											<div class="col-md-12"><label><?=$GLOBALS['_']['post_picture_5'];?></label></div>
 											<div class="col-md-12">
-												<a href="../po-content/uploads/<?=$current_post['picture'];?>" target="_blank"><?=$GLOBALS['_']['post_picture_6'];?></a>
+												<a href="../content/uploads/<?=$current_post['picture'];?>" target="_blank"><?=$GLOBALS['_']['post_picture_6'];?></a>
 												<p>
 													<i><?=$GLOBALS['_']['post_picture_4'];?></i>
 													<button type="button" class="btn btn-xs btn-danger pull-right del-image" id="<?=$current_post['id_post'];?>"><i class="fa fa-trash-o"></i></button>
@@ -611,20 +611,20 @@ class Post extends PoCore
 						</div>
 						<div class="row">
 							<div class="col-md-12">
-								<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_picture'], 'name' => 'picture', 'id' => 'picture', 'value' => $current_post['picture']), $inputgroup = true, $inputgroupopt = array('href' => '../'.DIR_INC.'/js/filemanager/dialog.php?type=1&field_id=picture', 'id' => 'browse-file', 'class' => 'btn-success', 'options' => '', 'title' => $GLOBALS['_']['action_7'].' '.$GLOBALS['_']['post_picture']));?>
+								<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_picture'], 'name' => 'picture', 'id' => 'picture', 'value' => $current_post['picture']), $inputgroup = true, $inputgroupopt = array('href' => '../'.DIR_INC.'/js/filemanager/dialog.php?type=1&field_id=picture', 'id' => 'browse-file', 'class' => 'btn-success', 'options' => '', 'title' => $GLOBALS['_']['action_7'].' '.$GLOBALS['_']['post_picture']));?>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-12">
-								<?=$this->pohtml->inputTextarea(array('label' => $GLOBALS['_']['post_picture_description'], 'name' => 'picture_description', 'id' => 'picture_description', 'class' => 'mceNoEditor', 'value' => $current_post['picture_description'], 'options' => 'rows="3" cols=""'));?>
+								<?=$this->html->inputTextarea(array('label' => $GLOBALS['_']['post_picture_description'], 'name' => 'picture_description', 'id' => 'picture_description', 'class' => 'mceNoEditor', 'value' => $current_post['picture_description'], 'options' => 'rows="3" cols=""'));?>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-6">
-								<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_date'], 'name' => 'publishdate', 'id' => 'publishdate', 'value' => $current_post['date'], 'mandatory' => true, 'options' => 'required'));?>
+								<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_date'], 'name' => 'publishdate', 'id' => 'publishdate', 'value' => $current_post['date'], 'mandatory' => true, 'options' => 'required'));?>
 							</div>
 							<div class="col-md-6">
-								<?=$this->pohtml->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_time'], 'name' => 'publishtime', 'id' => 'publishtime', 'value' => $current_post['time'], 'mandatory' => true, 'options' => 'required'));?>
+								<?=$this->html->inputText(array('type' => 'text', 'label' => $GLOBALS['_']['post_time'], 'name' => 'publishtime', 'id' => 'publishtime', 'value' => $current_post['time'], 'mandatory' => true, 'options' => 'required'));?>
 							</div>
 						</div>
 						<div class="row">
@@ -635,13 +635,13 @@ class Post extends PoCore
 											array('name' => 'comment', 'id' => 'comment', 'value' => 'Y', 'options' => '', 'title' => 'Y'),
 											array('name' => 'comment', 'id' => 'comment', 'value' => 'N', 'options' => 'checked', 'title' => 'N')
 										);
-										echo $this->pohtml->inputRadio(array('label' => $GLOBALS['_']['post_comment'], 'mandatory' => true), $radioitem, $inline = true);
+										echo $this->html->inputRadio(array('label' => $GLOBALS['_']['post_comment'], 'mandatory' => true), $radioitem, $inline = true);
 									} else {
 										$radioitem = array(
 											array('name' => 'comment', 'id' => 'comment', 'value' => 'Y', 'options' => 'checked', 'title' => 'Y'),
 											array('name' => 'comment', 'id' => 'comment', 'value' => 'N', 'options' => '', 'title' => 'N')
 										);
-										echo $this->pohtml->inputRadio(array('label' => $GLOBALS['_']['post_comment'], 'mandatory' => true), $radioitem, $inline = true);
+										echo $this->html->inputRadio(array('label' => $GLOBALS['_']['post_comment'], 'mandatory' => true), $radioitem, $inline = true);
 									}
 								?>
 							</div>
@@ -654,13 +654,13 @@ class Post extends PoCore
 											array('name' => 'active', 'id' => 'active', 'value' => 'Y', 'options' => '', 'title' => 'Y'),
 											array('name' => 'active', 'id' => 'active', 'value' => 'N', 'options' => 'checked', 'title' => 'N')
 										);
-										echo $this->pohtml->inputRadio(array('label' => $GLOBALS['_']['post_active'], 'mandatory' => true), $radioitem, $inline = true);
+										echo $this->html->inputRadio(array('label' => $GLOBALS['_']['post_active'], 'mandatory' => true), $radioitem, $inline = true);
 									} else {
 										$radioitem = array(
 											array('name' => 'active', 'id' => 'active', 'value' => 'Y', 'options' => 'checked', 'title' => 'Y'),
 											array('name' => 'active', 'id' => 'active', 'value' => 'N', 'options' => '', 'title' => 'N')
 										);
-										echo $this->pohtml->inputRadio(array('label' => $GLOBALS['_']['post_active'], 'mandatory' => true), $radioitem, $inline = true);
+										echo $this->html->inputRadio(array('label' => $GLOBALS['_']['post_active'], 'mandatory' => true), $radioitem, $inline = true);
 									}
 								?>
 							</div>
@@ -669,11 +669,11 @@ class Post extends PoCore
 					<div class="col-md-12">
 						<div class="row">
 							<div class="col-md-12">
-								<?=$this->pohtml->formAction();?>
+								<?=$this->html->formAction();?>
 							</div>
 						</div>
 					</div>
-				<?=$this->pohtml->formEnd();?>
+				<?=$this->html->formEnd();?>
 			</div>
 		</div>
 		<div class="block-content">
@@ -686,8 +686,8 @@ class Post extends PoCore
 			</div>
 			<div class="row">
 				<?php
-					$gallerys = $this->podb->from('post_gallery')->where('id_post', $current_post['id_post'])->orderBy('id_post_gallery DESC')->fetchAll();
-					$count_gallerys = $this->podb->from('post_gallery')->where('id_post', $current_post['id_post'])->orderBy('id_post_gallery DESC')->count();
+					$gallerys = $this->db->from('post_gallery')->where('id_post', $current_post['id_post'])->orderBy('id_post_gallery DESC')->fetchAll();
+					$count_gallerys = $this->db->from('post_gallery')->where('id_post', $current_post['id_post'])->orderBy('id_post_gallery DESC')->count();
 					if ($count_gallerys > 0) {
 				?>
 				<div class="col-md-12">
@@ -746,37 +746,37 @@ class Post extends PoCore
 	public function import()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'post', 'create')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		?>
 		<div class="block-content">
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->headTitle($GLOBALS['_']['post_import']);?>
+					<?=$this->html->headTitle($GLOBALS['_']['post_import']);?>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'admin.php?mod=post&act=processimport', 'enctype' => true, 'autocomplete' => 'off'));?>
+					<?=$this->html->formStart(array('method' => 'post', 'action' => 'admin.php?mod=post&act=processimport', 'enctype' => true, 'autocomplete' => 'off'));?>
 						<div class="row">
 							<div class="col-md-12">
 								<?php
 									$item = array(
-										array('value' => 'popojicms', 'title' => 'PopojiCMS'),
+										array('value' => 'bijicms', 'title' => 'BijiCMS'),
 										array('value' => 'wordpress', 'title' => 'WordPress')
 									);
 								?>
-								<?=$this->pohtml->inputSelect(array('id' => 'from', 'label' => $GLOBALS['_']['post_import_from'], 'name' => 'from', 'mandatory' => true), $item);?>
+								<?=$this->html->inputSelect(array('id' => 'from', 'label' => $GLOBALS['_']['post_import_from'], 'name' => 'from', 'mandatory' => true), $item);?>
 								<div class="form-group">
 									<label><?=$GLOBALS['_']['post_file'];?> <i>(.xml)</i> <span class="text-danger">*</span></label>
 									<input name="fupload" id="fupload" type="file" /><br />
 									<p><i><span class="text-danger">*</span> <?=$GLOBALS['_']['post_import_help'];?></i></p>
 								</div>
-								<?=$this->pohtml->formAction();?>
+								<?=$this->html->formAction();?>
 							</div>
 						</div>
-					<?=$this->pohtml->formEnd();?>
+					<?=$this->html->formEnd();?>
 				</div>
 			</div>
 		</div>
@@ -792,7 +792,7 @@ class Post extends PoCore
 	public function processimport()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'post', 'create')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
@@ -800,7 +800,7 @@ class Post extends PoCore
 			<div class="block-content">
 				<div class="row">
 					<div class="col-md-12">
-						<?=$this->pohtml->headTitle($GLOBALS['_']['post_import'], '
+						<?=$this->html->headTitle($GLOBALS['_']['post_import'], '
 							<div class="btn-title pull-right">
 								<a href="admin.php?mod=post" class="btn btn-success btn-sm"><i class="fa fa-book"></i> '.$GLOBALS['_']['post_back_to_post'].'</a>
 								<a href="admin.php?mod=post&act=import" class="btn btn-info btn-sm"><i class="fa fa-download"></i> '.$GLOBALS['_']['post_import'].'</a>
@@ -813,7 +813,7 @@ class Post extends PoCore
 						<?php
 						if (!empty($_FILES['fupload']['tmp_name'])) {
 							$exp = explode('.', $_FILES['fupload']['name']);
-							$xmlfile = $this->postring->seo_title($exp[0]).'-'.rand(000000,999999).'-popoji.'.end($exp);
+							$xmlfile = $this->string->seo_title($exp[0]).'-'.rand(000000,999999).'-biji.'.end($exp);
 							if (($_FILES["fupload"]["size"] < 10000000) && in_array(end($exp), array('xml'))) {
 								if (file_exists('../'.DIR_CON.'/uploads/'.$xmlfile)) {
 									echo '<div class="alert alert-danger" role="alert">'.$GLOBALS['_']['post_message_7'].'</div>';
@@ -841,9 +841,9 @@ class Post extends PoCore
 										<div id="progress_bar" class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="<?=$total_xml;?>" style="width: 0%; line-height: 20px;"></div>
 									</div>
 									<?php
-									if ($this->postring->valid($_POST['from'], 'xss') == 'popojicms') {
+									if ($this->string->valid($_POST['from'], 'xss') == 'bijicms') {
 										foreach ($importfile->channel->item as $item) {
-											$current_seotitle = $this->podb->from('post')
+											$current_seotitle = $this->db->from('post')
 												->where('seotitle', $item->seotitle)
 												->count();
 											if ($current_seotitle < 1) {
@@ -851,11 +851,11 @@ class Post extends PoCore
 												if ($imageurl != 'none') {
 													$namefile = explode('/', $imageurl);
 													file_put_contents('../'.DIR_CON.'/uploads/'.end($namefile), file_get_contents($imageurl));
-													$original = new PoSimpleImage('../'.DIR_CON.'/uploads/'.end($namefile));
+													$original = new SimpleImage('../'.DIR_CON.'/uploads/'.end($namefile));
 													$original->resize(900, 600)->save();
-													$medium = new PoSimpleImage('../'.DIR_CON.'/uploads/'.end($namefile));
+													$medium = new SimpleImage('../'.DIR_CON.'/uploads/'.end($namefile));
 													$medium->resize(640, 426)->save('../'.DIR_CON.'/uploads/medium/medium_'.end($namefile));
-													$thumb = new PoSimpleImage('../'.DIR_CON.'/uploads/'.end($namefile));
+													$thumb = new SimpleImage('../'.DIR_CON.'/uploads/'.end($namefile));
 													$thumb->resize(122, 91)->save('../'.DIR_CON.'/thumbs/'.end($namefile));
 													$datapic = array(
 														'picture' => end($namefile)
@@ -874,23 +874,23 @@ class Post extends PoCore
 													'active' => $item->active
 												);
 												$datafinal = array_merge($data, $datapic);
-												$query_post = $this->podb->insertInto('post')->values($datafinal);
+												$query_post = $this->db->insertInto('post')->values($datafinal);
 												$query_post->execute();
 
 												$expl = explode(",", $item->tag);
 												$total = count($expl);
 												for($i=0; $i<$total; $i++){
-													$last_tag = $this->podb->from('tag')
+													$last_tag = $this->db->from('tag')
 														->where('tag_seo', $expl[$i])
 														->limit(1)
 														->fetch();
 													if ($last_tag > 0) {
-														$query_tag = $this->podb->update('tag')
+														$query_tag = $this->db->update('tag')
 															->set(array('count' => $last_tag['count']+1))
 															->where('tag_seo', $expl[$i]);
 														$query_tag->execute();
 													} else {
-														$query_tag = $this->podb->insertInto('tag')->values(
+														$query_tag = $this->db->insertInto('tag')->values(
 															array(
 																'title' => str_replace('-', ' ', $expl[$i]),
 																'tag_seo' => $expl[$i],
@@ -901,38 +901,38 @@ class Post extends PoCore
 													}
 												}
 
-												$last_post = $this->podb->from('post')
+												$last_post = $this->db->from('post')
 													->orderBy('id_post DESC')
 													->limit(1)
 													->fetch();
 
-												$count_cat_seotitle = $this->podb->from('category')
-													->where('seotitle', $this->postring->seo_title($item->category))
+												$count_cat_seotitle = $this->db->from('category')
+													->where('seotitle', $this->string->seo_title($item->category))
 													->count();
 												if ($count_cat_seotitle > 0) {
-													$current_cat_seotitle = $this->podb->from('category')
-														->where('seotitle', $this->postring->seo_title($item->category))
+													$current_cat_seotitle = $this->db->from('category')
+														->where('seotitle', $this->string->seo_title($item->category))
 														->limit(1)
 														->fetch();
 													$id_category = $current_cat_seotitle['id_category'];
 												} else {
 													$category = array(
 														'id_parent' => '0',
-														'seotitle' => $this->postring->seo_title($item->category),
+														'seotitle' => $this->string->seo_title($item->category),
 														'active' => 'Y'
 													);
-													$query_category = $this->podb->insertInto('category')->values($category);
+													$query_category = $this->db->insertInto('category')->values($category);
 													$query_category->execute();
-													$last_category = $this->podb->from('category')
+													$last_category = $this->db->from('category')
 														->orderBy('id_category DESC')
 														->limit(1)
 														->fetch();
 													$category_description = array(
 														'id_category' => $last_category['id_category'],
 														'id_language' => '1',
-														'title' =>  $this->postring->valid($item->category[0], 'xss'),
+														'title' =>  $this->string->valid($item->category[0], 'xss'),
 													);
-													$query_category_description = $this->podb->insertInto('category_description')->values($category_description);
+													$query_category_description = $this->db->insertInto('category_description')->values($category_description);
 													$query_category_description->execute();
 													$id_category = $last_category['id_category'];
 												}
@@ -941,38 +941,38 @@ class Post extends PoCore
 													'id_post' => $last_post['id_post'],
 													'id_category' => $id_category,
 												);
-												$query_post_category = $this->podb->insertInto('post_category')->values($post_category);
+												$query_post_category = $this->db->insertInto('post_category')->values($post_category);
 												$query_post_category->execute();
 
 												$post_description = array(
 													'id_post' => $last_post['id_post'],
 													'id_language' => '1',
-													'title' => $this->postring->valid($item->title, 'xss'),
+													'title' => $this->string->valid($item->title, 'xss'),
 													'content' => $item->content
 												);
-												$query_post_description = $this->podb->insertInto('post_description')->values($post_description);
+												$query_post_description = $this->db->insertInto('post_description')->values($post_description);
 												$query_post_description->execute();
 											}
 											$xi++;
 											$progress_bar = ($xi / $total_xml) * 100;
 											$_SESSION['progress_bar'] = floor($progress_bar);
 										}
-									} elseif ($this->postring->valid($_POST['from'], 'xss') == 'wordpress') {
+									} elseif ($this->string->valid($_POST['from'], 'xss') == 'wordpress') {
 										foreach ($importfile->channel->item as $item) {
 											if ($item->children('wp', true)->post_type == 'post') {
-												$current_seotitle = $this->podb->from('post')
-													->where('seotitle', $this->postring->seo_title($item->title))
+												$current_seotitle = $this->db->from('post')
+													->where('seotitle', $this->string->seo_title($item->title))
 													->count();
 												if ($current_seotitle < 1) {
 													$imageurl = $this->search_attachment_wp('../'.DIR_CON.'/uploads/'.$xmlfile, $item->children('wp', true)->post_id);
 													if ($imageurl != 'none') {
 														$namefile = explode('/', $imageurl);
 														file_put_contents('../'.DIR_CON.'/uploads/'.end($namefile), file_get_contents($imageurl));
-														$original = new PoSimpleImage('../'.DIR_CON.'/uploads/'.end($namefile));
+														$original = new SimpleImage('../'.DIR_CON.'/uploads/'.end($namefile));
 														$original->resize(900, 600)->save();
-														$medium = new PoSimpleImage('../'.DIR_CON.'/uploads/'.end($namefile));
+														$medium = new SimpleImage('../'.DIR_CON.'/uploads/'.end($namefile));
 														$medium->resize(640, 426)->save('../'.DIR_CON.'/uploads/medium/medium_'.end($namefile));
-														$thumb = new PoSimpleImage('../'.DIR_CON.'/uploads/'.end($namefile));
+														$thumb = new SimpleImage('../'.DIR_CON.'/uploads/'.end($namefile));
 														$thumb->resize(122, 91)->save('../'.DIR_CON.'/thumbs/'.end($namefile));
 														$datapic = array(
 															'picture' => end($namefile)
@@ -983,7 +983,7 @@ class Post extends PoCore
 
 													$wpdatetime = explode(' ', $item->children('wp', true)->post_date);
 													$data = array(
-														'seotitle' => $this->postring->seo_title($item->title),
+														'seotitle' => $this->string->seo_title($item->title),
 														'date' => $wpdatetime[0],
 														'time' => $wpdatetime[1],
 														'publishdate' => $wpdatetime[0].' '.$wpdatetime[1],
@@ -992,41 +992,41 @@ class Post extends PoCore
 														'active' => ($item->children('wp', true)->status == 'publish' ? 'Y' : 'N')
 													);
 													$datafinal = array_merge($data, $datapic);
-													$query_post = $this->podb->insertInto('post')->values($datafinal);
+													$query_post = $this->db->insertInto('post')->values($datafinal);
 													$query_post->execute();
 
-													$last_post = $this->podb->from('post')
+													$last_post = $this->db->from('post')
 														->orderBy('id_post DESC')
 														->limit(1)
 														->fetch();
 
-													$count_cat_seotitle = $this->podb->from('category')
-														->where('seotitle', $this->postring->seo_title($item->category[0]))
+													$count_cat_seotitle = $this->db->from('category')
+														->where('seotitle', $this->string->seo_title($item->category[0]))
 														->count();
 													if ($count_cat_seotitle > 0) {
-														$current_cat_seotitle = $this->podb->from('category')
-															->where('seotitle', $this->postring->seo_title($item->category[0]))
+														$current_cat_seotitle = $this->db->from('category')
+															->where('seotitle', $this->string->seo_title($item->category[0]))
 															->limit(1)
 															->fetch();
 														$id_category = $current_cat_seotitle['id_category'];
 													} else {
 														$category = array(
 															'id_parent' => '0',
-															'seotitle' => $this->postring->seo_title($item->category[0]),
+															'seotitle' => $this->string->seo_title($item->category[0]),
 															'active' => 'Y'
 														);
-														$query_category = $this->podb->insertInto('category')->values($category);
+														$query_category = $this->db->insertInto('category')->values($category);
 														$query_category->execute();
-														$last_category = $this->podb->from('category')
+														$last_category = $this->db->from('category')
 															->orderBy('id_category DESC')
 															->limit(1)
 															->fetch();
 														$category_description = array(
 															'id_category' => $last_category['id_category'],
 															'id_language' => '1',
-															'title' =>  $this->postring->valid($item->category[0], 'xss'),
+															'title' =>  $this->string->valid($item->category[0], 'xss'),
 														);
-														$query_category_description = $this->podb->insertInto('category_description')->values($category_description);
+														$query_category_description = $this->db->insertInto('category_description')->values($category_description);
 														$query_category_description->execute();
 														$id_category = $last_category['id_category'];
 													}
@@ -1035,16 +1035,16 @@ class Post extends PoCore
 														'id_post' => $last_post['id_post'],
 														'id_category' => $id_category,
 													);
-													$query_post_category = $this->podb->insertInto('post_category')->values($post_category);
+													$query_post_category = $this->db->insertInto('post_category')->values($post_category);
 													$query_post_category->execute();
 
 													$post_description = array(
 														'id_post' => $last_post['id_post'],
 														'id_language' => '1',
-														'title' => $this->postring->valid($item->title, 'xss'),
+														'title' => $this->string->valid($item->title, 'xss'),
 														'content' => stripslashes(htmlspecialchars($item->children("content", true),ENT_QUOTES))
 													);
-													$query_post_description = $this->podb->insertInto('post_description')->values($post_description);
+													$query_post_description = $this->db->insertInto('post_description')->values($post_description);
 													$query_post_description->execute();
 												}
 											}
@@ -1068,25 +1068,25 @@ class Post extends PoCore
 				</div>
 				<div class="row">
 					<div class="col-md-12">
-						<?=$this->pohtml->formStart(array('method' => 'post', 'action' => 'admin.php?mod=post&act=processimport', 'enctype' => true, 'autocomplete' => 'off'));?>
+						<?=$this->html->formStart(array('method' => 'post', 'action' => 'admin.php?mod=post&act=processimport', 'enctype' => true, 'autocomplete' => 'off'));?>
 							<div class="row">
 								<div class="col-md-12">
 									<?php
 										$item = array(
-											array('value' => 'popojicms', 'title' => 'PopojiCMS'),
+											array('value' => 'bijicms', 'title' => 'BijiCMS'),
 											array('value' => 'wordpress', 'title' => 'WordPress')
 										);
 									?>
-									<?=$this->pohtml->inputSelect(array('id' => 'from', 'label' => $GLOBALS['_']['post_import_from'], 'name' => 'from', 'mandatory' => true), $item);?>
+									<?=$this->html->inputSelect(array('id' => 'from', 'label' => $GLOBALS['_']['post_import_from'], 'name' => 'from', 'mandatory' => true), $item);?>
 									<div class="form-group">
 										<label><?=$GLOBALS['_']['post_file'];?> <i>(.xml)</i> <span class="text-danger">*</span></label>
 										<input name="fupload" id="fupload" type="file" /><br />
 										<p><i><span class="text-danger">*</span> <?=$GLOBALS['_']['post_import_help'];?></i></p>
 									</div>
-									<?=$this->pohtml->formAction();?>
+									<?=$this->html->formAction();?>
 								</div>
 							</div>
-						<?=$this->pohtml->formEnd();?>
+						<?=$this->html->formEnd();?>
 					</div>
 				</div>
 			</div>
@@ -1104,17 +1104,17 @@ class Post extends PoCore
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'post', 'update')) {
 			if ($_SESSION['leveluser'] != '1' || $_SESSION['leveluser'] != '2') {
-				echo $this->pohtml->error();
+				echo $this->html->error();
 				exit;
 			}
 		}
 		if (!empty($_POST)) {
 			$post = array(
-				'headline' => $this->postring->valid($_POST['headline'], 'xss')
+				'headline' => $this->string->valid($_POST['headline'], 'xss')
 			);
-			$query_post = $this->podb->update('post')
+			$query_post = $this->db->update('post')
 				->set($post)
-				->where('id_post', $this->postring->valid($_POST['id'], 'sql'));
+				->where('id_post', $this->string->valid($_POST['id'], 'sql'));
 			$query_post->execute();
 		}
 	}
@@ -1128,38 +1128,38 @@ class Post extends PoCore
 	public function delete()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'post', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
 			if ($_SESSION['leveluser'] != '1' || $_SESSION['leveluser'] != '2') {
-				$query_desc = $this->podb->deleteFrom('post_description')->where('id_post', $this->postring->valid($_POST['id'], 'sql'));
+				$query_desc = $this->db->deleteFrom('post_description')->where('id_post', $this->string->valid($_POST['id'], 'sql'));
 				$query_desc->execute();
-				$query_cats = $this->podb->deleteFrom('post_category')->where('id_post', $this->postring->valid($_POST['id'], 'sql'));
+				$query_cats = $this->db->deleteFrom('post_category')->where('id_post', $this->string->valid($_POST['id'], 'sql'));
 				$query_cats->execute();
-				$query_gals = $this->podb->deleteFrom('post_gallery')->where('id_post', $this->postring->valid($_POST['id'], 'sql'));
+				$query_gals = $this->db->deleteFrom('post_gallery')->where('id_post', $this->string->valid($_POST['id'], 'sql'));
 				$query_gals->execute();
-				$query_pag = $this->podb->deleteFrom('post')->where('id_post', $this->postring->valid($_POST['id'], 'sql'));
+				$query_pag = $this->db->deleteFrom('post')->where('id_post', $this->string->valid($_POST['id'], 'sql'));
 				$query_pag->execute();
-				$this->poflash->success($GLOBALS['_']['post_message_3'], 'admin.php?mod=post');
+				$this->flash->success($GLOBALS['_']['post_message_3'], 'admin.php?mod=post');
 			} else {
-				$current_post = $this->podb->from('post')
-					->where('id_post', $this->postring->valid($_POST['id'], 'sql'))
+				$current_post = $this->db->from('post')
+					->where('id_post', $this->string->valid($_POST['id'], 'sql'))
 					->where('editor', $_SESSION['iduser'])
 					->limit(1)
 					->fetch();
 				if (empty($current_post)) {
-					$this->poflash->error($GLOBALS['_']['post_message_6'], 'admin.php?mod=post');
+					$this->flash->error($GLOBALS['_']['post_message_6'], 'admin.php?mod=post');
 				} else {
-					$query_desc = $this->podb->deleteFrom('post_description')->where('id_post', $this->postring->valid($_POST['id'], 'sql'));
+					$query_desc = $this->db->deleteFrom('post_description')->where('id_post', $this->string->valid($_POST['id'], 'sql'));
 					$query_desc->execute();
-					$query_cats = $this->podb->deleteFrom('post_category')->where('id_post', $this->postring->valid($_POST['id'], 'sql'));
+					$query_cats = $this->db->deleteFrom('post_category')->where('id_post', $this->string->valid($_POST['id'], 'sql'));
 					$query_cats->execute();
-					$query_gals = $this->podb->deleteFrom('post_gallery')->where('id_post', $this->postring->valid($_POST['id'], 'sql'));
+					$query_gals = $this->db->deleteFrom('post_gallery')->where('id_post', $this->string->valid($_POST['id'], 'sql'));
 					$query_gals->execute();
-					$query_pag = $this->podb->deleteFrom('post')->where('id_post', $this->postring->valid($_POST['id'], 'sql'));
+					$query_pag = $this->db->deleteFrom('post')->where('id_post', $this->string->valid($_POST['id'], 'sql'));
 					$query_pag->execute();
-					$this->poflash->success($GLOBALS['_']['post_message_3'], 'admin.php?mod=post');
+					$this->flash->success($GLOBALS['_']['post_message_3'], 'admin.php?mod=post');
 				}
 			}
 		}
@@ -1174,44 +1174,44 @@ class Post extends PoCore
 	public function multidelete()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'post', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$totaldata = $this->postring->valid($_POST['totaldata'], 'xss');
+			$totaldata = $this->string->valid($_POST['totaldata'], 'xss');
 			if ($totaldata != "0") {
 				$items = $_POST['item'];
 				foreach($items as $item){
 					if ($_SESSION['leveluser'] != '1' || $_SESSION['leveluser'] != '2') {
-						$query_desc = $this->podb->deleteFrom('post_description')->where('id_post', $this->postring->valid($item['deldata'], 'sql'));
+						$query_desc = $this->db->deleteFrom('post_description')->where('id_post', $this->string->valid($item['deldata'], 'sql'));
 						$query_desc->execute();
-						$query_cats = $this->podb->deleteFrom('post_category')->where('id_post', $this->postring->valid($item['deldata'], 'sql'));
+						$query_cats = $this->db->deleteFrom('post_category')->where('id_post', $this->string->valid($item['deldata'], 'sql'));
 						$query_cats->execute();
-						$query_gals = $this->podb->deleteFrom('post_gallery')->where('id_post', $this->postring->valid($item['deldata'], 'sql'));
+						$query_gals = $this->db->deleteFrom('post_gallery')->where('id_post', $this->string->valid($item['deldata'], 'sql'));
 						$query_gals->execute();
-						$query_pag = $this->podb->deleteFrom('post')->where('id_post', $this->postring->valid($item['deldata'], 'sql'));
+						$query_pag = $this->db->deleteFrom('post')->where('id_post', $this->string->valid($item['deldata'], 'sql'));
 						$query_pag->execute();
 					} else {
-						$current_post = $this->podb->from('post')
-							->where('id_post', $this->postring->valid($item['deldata'], 'sql'))
+						$current_post = $this->db->from('post')
+							->where('id_post', $this->string->valid($item['deldata'], 'sql'))
 							->where('editor', $_SESSION['iduser'])
 							->limit(1)
 							->fetch();
 						if (!empty($current_post)) {
-							$query_desc = $this->podb->deleteFrom('post_description')->where('id_post', $this->postring->valid($item['deldata'], 'sql'));
+							$query_desc = $this->db->deleteFrom('post_description')->where('id_post', $this->string->valid($item['deldata'], 'sql'));
 							$query_desc->execute();
-							$query_cats = $this->podb->deleteFrom('post_category')->where('id_post', $this->postring->valid($item['deldata'], 'sql'));
+							$query_cats = $this->db->deleteFrom('post_category')->where('id_post', $this->string->valid($item['deldata'], 'sql'));
 							$query_cats->execute();
-							$query_gals = $this->podb->deleteFrom('post_gallery')->where('id_post', $this->postring->valid($item['deldata'], 'sql'));
+							$query_gals = $this->db->deleteFrom('post_gallery')->where('id_post', $this->string->valid($item['deldata'], 'sql'));
 							$query_gals->execute();
-							$query_pag = $this->podb->deleteFrom('post')->where('id_post', $this->postring->valid($item['deldata'], 'sql'));
+							$query_pag = $this->db->deleteFrom('post')->where('id_post', $this->string->valid($item['deldata'], 'sql'));
 							$query_pag->execute();
 						}
 					}
 				}
-				$this->poflash->success($GLOBALS['_']['post_message_3'], 'admin.php?mod=post');
+				$this->flash->success($GLOBALS['_']['post_message_3'], 'admin.php?mod=post');
 			} else {
-				$this->poflash->error($GLOBALS['_']['post_message_6'], 'admin.php?mod=post');
+				$this->flash->error($GLOBALS['_']['post_message_6'], 'admin.php?mod=post');
 			}
 		}
 	}
@@ -1225,16 +1225,16 @@ class Post extends PoCore
 	public function delimage()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'post', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
 			$post = array(
 				'picture' => ''
 			);
-			$query_post = $this->podb->update('post')
+			$query_post = $this->db->update('post')
 				->set($post)
-				->where('id_post', $this->postring->valid($_POST['id'], 'sql'));
+				->where('id_post', $this->string->valid($_POST['id'], 'sql'));
 			$query_post->execute();
 		}
 	}
@@ -1248,14 +1248,14 @@ class Post extends PoCore
 	public function get_category()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'category', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			if ($this->postring->valid($_POST['id'], 'sql') == '0') {
+			if ($this->string->valid($_POST['id'], 'sql') == '0') {
 				echo $this->generate_checkbox(0, 'add');
 			} else {
-				echo $this->generate_checkbox(0, 'update', $this->postring->valid($_POST['id'], 'sql'));
+				echo $this->generate_checkbox(0, 'update', $this->string->valid($_POST['id'], 'sql'));
 			}
 		}
 	}
@@ -1269,12 +1269,12 @@ class Post extends PoCore
 	public function get_tag()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'tag', 'read')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$search = $this->postring->valid($_POST['search'], 'xss');
-			$tags = $this->podb->from('tag')
+			$search = $this->string->valid($_POST['search'], 'xss');
+			$tags = $this->db->from('tag')
 				->where('title LIKE "%'.$search.'%"')
 				->orderBy('id_tag ASC')
 				->fetchAll();
@@ -1292,23 +1292,23 @@ class Post extends PoCore
 	public function addgallery()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'post', 'update')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$upload = new PoUpload($_FILES['file']);
+			$upload = new Upload($_FILES['file']);
 			if ($upload->uploaded) {
-				$id_post = $this->postring->valid($_POST['id_post'], 'sql');
-				$file_name = reset((explode('.', $this->postring->valid($_FILES['file']['name'], 'xss'))));
+				$id_post = $this->string->valid($_POST['id_post'], 'sql');
+				$file_name = reset((explode('.', $this->string->valid($_FILES['file']['name'], 'xss'))));
 				$upload->file_new_name_body = $file_name;
 				$upload->image_convert = 'jpg';
 				$upload->process('../'.DIR_CON.'/uploads/');
 				if ($upload->processed) {
-					$upload_med = new PoUpload($_FILES['file']);
+					$upload_med = new Upload($_FILES['file']);
 					$upload_med->file_new_name_body = 'medium_'.$file_name;
 					$upload_med->image_convert = 'jpg';
 					$upload_med->image_resize = true;
-					$medium_size = explode('x', $this->posetting[12]['value']);
+					$medium_size = explode('x', $this->setting[12]['value']);
 					$upload_med->image_x = $medium_size[0];
 					$upload_med->image_y = $medium_size[1];
 					$upload_med->image_ratio = true;
@@ -1317,7 +1317,7 @@ class Post extends PoCore
 							'id_post' => $id_post,
 							'picture' => $upload->file_dst_name
 						);
-						$post_gal_query = $this->podb->insertInto('post_gallery')->values($post_gal);
+						$post_gal_query = $this->db->insertInto('post_gallery')->values($post_gal);
 						$post_gal_query->execute();
 						$upload->clean();
 						$upload_med->clean();
@@ -1335,11 +1335,11 @@ class Post extends PoCore
 	public function deletegallery()
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'post', 'delete')) {
-			echo $this->pohtml->error();
+			echo $this->html->error();
 			exit;
 		}
 		if (!empty($_POST)) {
-			$query_gal = $this->podb->deleteFrom('post_gallery')->where('id_post_gallery', $this->postring->valid($_POST['id'], 'sql'));
+			$query_gal = $this->db->deleteFrom('post_gallery')->where('id_post_gallery', $this->string->valid($_POST['id'], 'sql'));
 			$query_gal->execute();
 		}
 	}
@@ -1354,14 +1354,14 @@ class Post extends PoCore
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'oauth', 'read')) {
 			if ($_SESSION['leveluser'] != '1' || $_SESSION['leveluser'] != '2') {
-				echo $this->pohtml->error();
+				echo $this->html->error();
 				exit;
 			}
 		}
 		if (!empty($_GET['id'])) {
 			require_once '../'.DIR_CON.'/component/oauth/facebook/Facebook/autoload.php';
 
-			$currentOauthfb = $this->podb->from('oauth')->fetchAll();
+			$currentOauthfb = $this->db->from('oauth')->fetchAll();
 			$appIdOauthfb = $currentOauthfb[0]['oauth_key'];
 			$secretOauthfb = $currentOauthfb[0]['oauth_secret'];
 			$idOauthfb = $currentOauthfb[0]['oauth_id'];
@@ -1399,13 +1399,13 @@ class Post extends PoCore
 					}
 				}
 
-				$current_post = $this->podb->from('post')
+				$current_post = $this->db->from('post')
 					->select('post_description.title')
 					->leftJoin('post_description ON post_description.id_post = post.id_post')
-					->where('post.id_post', $this->postring->valid($_GET['id'], 'sql'))
+					->where('post.id_post', $this->string->valid($_GET['id'], 'sql'))
 					->limit(1)
 					->fetch();
-				$paglang = $this->podb->from('post_description')
+				$paglang = $this->db->from('post_description')
 					->where('post_description.id_post', $current_post['id_post'])
 					->where('post_description.id_language', '1')
 					->fetch();
@@ -1413,11 +1413,11 @@ class Post extends PoCore
 					$response = $fb->post('/me/feed',
 						[
 							"message" => $paglang['title'],
-							"link" => $this->postring->permalink(rtrim(WEB_URL, '/'), $current_post),
+							"link" => $this->string->permalink(rtrim(WEB_URL, '/'), $current_post),
 							"picture" => "http://www.example.net/images/example.png",
 							"name" => $paglang['title'],
 							"caption" => trim(trim(WEB_URL, "http://"), "/"),
-							"description" => $this->postring->cuthighlight('post', $paglang['content'], '500')
+							"description" => $this->string->cuthighlight('post', $paglang['content'], '500')
 						],
 						$accessToken
 					);
@@ -1425,16 +1425,16 @@ class Post extends PoCore
 					$response = $fb->post('/'.$idOauthfb.'/feed',
 						[
 							"message" => $paglang['title'],
-							"link" => $this->postring->permalink(rtrim(WEB_URL, '/'), $current_post),
+							"link" => $this->string->permalink(rtrim(WEB_URL, '/'), $current_post),
 							"picture" => "http://www.example.net/images/example.png",
 							"name" => $paglang['title'],
 							"caption" => trim(trim(WEB_URL, "http://"), "/"),
-							"description" => $this->postring->cuthighlight('post', $paglang['content'], '500')
+							"description" => $this->string->cuthighlight('post', $paglang['content'], '500')
 						],
 						$accessToken
 					);
 				}
-				$this->poflash->success($GLOBALS['_']['post_oauth_message_3'], 'admin.php?mod=post');
+				$this->flash->success($GLOBALS['_']['post_oauth_message_3'], 'admin.php?mod=post');
 			} else {
 				$loginUrl = $helper->getLoginUrl(WEB_URL.DIR_ADM.'/route.php?mod=post&act=facebook&id=1', ['public_profile', 'email', 'manage_pages', 'publish_actions']);
 				header('location:'.$loginUrl);
@@ -1452,14 +1452,14 @@ class Post extends PoCore
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'oauth', 'read')) {
 			if ($_SESSION['leveluser'] != '1' || $_SESSION['leveluser'] != '2') {
-				echo $this->pohtml->error();
+				echo $this->html->error();
 				exit;
 			}
 		}
 		if (!empty($_GET['id'])) {
 			require_once '../'.DIR_CON.'/component/oauth/twitter/Twitter/twitteroauth.php';
 
-			$currentOauthtw = $this->podb->from('oauth')->fetchAll();
+			$currentOauthtw = $this->db->from('oauth')->fetchAll();
 			$conkeyOauthtw = $currentOauthtw[1]['oauth_key'];
 			$consecretOauthtw = $currentOauthtw[1]['oauth_secret'];
 			$idOauthtw = $currentOauthtw[1]['oauth_id'];
@@ -1472,25 +1472,25 @@ class Post extends PoCore
 
 			$connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $tokenOauthtw, $tokensecretOauthtw);
 
-			$current_post = $this->podb->from('post')
+			$current_post = $this->db->from('post')
 				->select('post_description.title')
 				->leftJoin('post_description ON post_description.id_post = post.id_post')
-				->where('post.id_post', $this->postring->valid($_GET['id'], 'sql'))
+				->where('post.id_post', $this->string->valid($_GET['id'], 'sql'))
 				->limit(1)
 				->fetch();
-			$paglang = $this->podb->from('post_description')
+			$paglang = $this->db->from('post_description')
 				->where('post_description.id_post', $current_post['id_post'])
 				->where('post_description.id_language', '1')
 				->fetch();
 
 			$params = array(
-				"status" => $paglang['title'].", Link : ".$this->postring->permalink(rtrim(WEB_URL, '/'), $current_post)
+				"status" => $paglang['title'].", Link : ".$this->string->permalink(rtrim(WEB_URL, '/'), $current_post)
 			);
 			$status = $connection->post('statuses/update', $params);
 			if (200 == $connection->http_code) {
-				$this->poflash->success($GLOBALS['_']['post_oauth_message_1'], 'admin.php?mod=post');
+				$this->flash->success($GLOBALS['_']['post_oauth_message_1'], 'admin.php?mod=post');
 			} else {
-				$this->poflash->error($GLOBALS['_']['post_oauth_message_2'], 'admin.php?mod=post');
+				$this->flash->error($GLOBALS['_']['post_oauth_message_2'], 'admin.php?mod=post');
 			}
 		}
 	}
@@ -1505,37 +1505,37 @@ class Post extends PoCore
 	{
 		if (!$this->auth($_SESSION['leveluser'], 'post', 'create')) {
 			if ($_SESSION['leveluser'] != '1' || $_SESSION['leveluser'] != '2') {
-				echo $this->pohtml->error();
+				echo $this->html->error();
 				exit;
 			}
 		}
 		if (!empty($_POST['id'])) {
-			$current_post = $this->podb->from('post')
+			$current_post = $this->db->from('post')
 				->select('post_description.title')
 				->leftJoin('post_description ON post_description.id_post = post.id_post')
-				->where('post.id_post', $this->postring->valid($_POST['id'], 'sql'))
+				->where('post.id_post', $this->string->valid($_POST['id'], 'sql'))
 				->limit(1)
 				->fetch();
-			$paglang = $this->podb->from('post_description')
+			$paglang = $this->db->from('post_description')
 				->where('post_description.id_post', $current_post['id_post'])
 				->where('post_description.id_language', '1')
 				->fetch();
-			$subscribes = $this->podb->from('subscribe')->fetchAll();
-			$from = $this->posetting[5]['value'];
+			$subscribes = $this->db->from('subscribe')->fetchAll();
+			$from = $this->setting[5]['value'];
 			foreach($subscribes as $subscribe){
 				$message = "<html>
 					<body>
 						Hi ".$subscribe['email']."<br />
 						We have the latest updates for you!<br />
 						Please click on the link below to begin reading :<br />
-						<a href='".$this->postring->permalink(rtrim(WEB_URL, '/'), $current_post)."'>".$paglang['title']."</a><br /><br />
+						<a href='".$this->string->permalink(rtrim(WEB_URL, '/'), $current_post)."'>".$paglang['title']."</a><br /><br />
 						Thank you for subscribing,<br />
-						".$this->posetting[0]['value']."
+						".$this->setting[0]['value']."
 					</body>
 				</html>";
-				if ($this->posetting[23]['value'] != 'SMTP') {
-					$poemail = new PoEmail;
-					$send = $poemail
+				if ($this->setting[23]['value'] != 'SMTP') {
+					$email = new Email;
+					$send = $email
 						->setOption(
 							array(
 								messageType => 'html'
@@ -1547,21 +1547,21 @@ class Post extends PoCore
 						->from($from)
 						->mail();
 				} else {
-					$this->pomail->isSMTP();
-					$this->pomail->SMTPDebug = 0;
-					$this->pomail->Debugoutput = 'html';
-					$this->pomail->Host = $this->posetting[24]['value'];
-					$this->pomail->Port = $this->posetting[27]['value'];
-					$this->pomail->SMTPAuth = true;
-					$this->pomail->SMTPSecure = 'ssl';
-					$this->pomail->Username = $this->posetting[25]['value'];;
-					$this->pomail->Password = $this->posetting[26]['value'];
-					$this->pomail->setFrom($this->posetting[5]['value'], $this->posetting[0]['value']);
-					$this->pomail->addAddress($subscribe['email']);
-					$this->pomail->IsHTML(true);
-					$this->pomail->Subject = 'Website Update - '.$paglang['title'];
-					$this->pomail->Body = $message;
-					$this->pomail->send();
+					$this->mail->isSMTP();
+					$this->mail->SMTPDebug = 0;
+					$this->mail->Debugoutput = 'html';
+					$this->mail->Host = $this->setting[24]['value'];
+					$this->mail->Port = $this->setting[27]['value'];
+					$this->mail->SMTPAuth = true;
+					$this->mail->SMTPSecure = 'ssl';
+					$this->mail->Username = $this->setting[25]['value'];;
+					$this->mail->Password = $this->setting[26]['value'];
+					$this->mail->setFrom($this->setting[5]['value'], $this->setting[0]['value']);
+					$this->mail->addAddress($subscribe['email']);
+					$this->mail->IsHTML(true);
+					$this->mail->Subject = 'Website Update - '.$paglang['title'];
+					$this->mail->Body = $message;
+					$this->mail->send();
 				}
 			}
 			echo "200";
@@ -1594,14 +1594,14 @@ class Post extends PoCore
 		$i = 1;
 		$html = "";
 		$indent = str_repeat("\t\t", $i);
-		$catfuns = $this->podb->from('category')
+		$catfuns = $this->db->from('category')
 			->select('category_description.title')
 			->leftJoin('category_description ON category_description.id_category = category.id_category')
 			->where('category.id_parent', $id)
 			->where('category_description.id_language', '1')
 			->orderBy('category.id_category ASC')
 			->fetchAll();
-		$catfunnum = $this->podb->from('category')->where('id_parent', $id)->orderBy('id_category ASC')->count();
+		$catfunnum = $this->db->from('category')->where('id_parent', $id)->orderBy('id_category ASC')->count();
 		if ($catfunnum > 0) {
 			$html .= "\n\t".$indent."";
 			$html .= "<ul class=\"list-unstyled\">";
@@ -1641,20 +1641,20 @@ class Post extends PoCore
 		$html = "";
 		$postcat = array();
 		$indent = str_repeat("\t\t", $i);
-		$catfuns = $this->podb->from('category')
+		$catfuns = $this->db->from('category')
 			->select('category_description.title')
 			->leftJoin('category_description ON category_description.id_category = category.id_category')
 			->where('category.id_parent', $id)
 			->where('category_description.id_language', '1')
 			->orderBy('category.id_category ASC')
 			->fetchAll();
-		$post_cats = $this->podb->from('post_category')
+		$post_cats = $this->db->from('post_category')
 			->where('id_post', $id_post)
 			->fetchAll();
 		foreach($post_cats as $post_cat){
 			$postcat[] = $post_cat['id_category'];
 		}
-		$catfunnum = $this->podb->from('category')->where('id_parent', $id)->orderBy('id_category ASC')->count();
+		$catfunnum = $this->db->from('category')->where('id_parent', $id)->orderBy('id_category ASC')->count();
 		if ($catfunnum > 0) {
 			$html .= "\n\t".$indent."";
 			$html .= "<ul class=\"list-unstyled\">";
