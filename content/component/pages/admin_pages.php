@@ -311,7 +311,7 @@ class Pages extends Core
 			$this->flash->success($GLOBALS['_']['pages_message_2'], 'admin.php?mod=pages');
 		}
 		$id = $this->string->valid($_GET['id'], 'sql');
-		$current_pages = $this->podb->from('pages')
+		$current_pages = $this->db->from('pages')
 			->select('pages_description.title')
 			->leftJoin('pages_description ON pages_description.id_pages = pages.id_pages')
 			->where('pages.id_pages', $id)

@@ -1,11 +1,11 @@
 <?php
 /*
  *
- * - PopojiCMS Front End File
+ * - BijiCMS Front End File
  *
  * - File : pages.php
  * - Version : 1.0
- * - Author : Jenuar Dalapang
+ * - Author : Imron Reviady
  * - License : MIT License
  *
  *
@@ -23,7 +23,7 @@
 */
 $router->match('GET|POST', '/pages/([a-z0-9_-]+)', function($seotitle) use ($core, $templates) {
 	$lang = $core->setlang('pages', WEB_LANG);
-	$pages = $core->podb->from('pages')
+	$pages = $core->db->from('pages')
 		->select(array('pages_description.title', 'pages_description.content'))
 		->leftJoin('pages_description ON pages_description.id_pages = pages.id_pages')
 		->where('pages.seotitle', $seotitle)
@@ -34,14 +34,14 @@ $router->match('GET|POST', '/pages/([a-z0-9_-]+)', function($seotitle) use ($cor
 	if ($pages) {
 		$info = array(
 			'page_title' => $pages['title'],
-			'page_desc' => $core->postring->cuthighlight('post', $pages['content'], '60'),
+			'page_desc' => $core->string->cuthighlight('post', $pages['content'], '60'),
 			'page_key' => $pages['title'],
 			'social_mod' => $lang['front_pages_title'],
-			'social_name' => $core->posetting[0]['value'],
-			'social_url' => $core->posetting[1]['value'].'/pages/'.$pages['seotitle'],
+			'social_name' => $core->setting[0]['value'],
+			'social_url' => $core->setting[1]['value'].'/pages/'.$pages['seotitle'],
 			'social_title' => $pages['title'],
-			'social_desc' => $core->postring->cuthighlight('post', $pages['content'], '60'),
-			'social_img' => $core->posetting[1]['value'].'/'.DIR_CON.'/uploads/'.$pages['picture']
+			'social_desc' => $core->string->cuthighlight('post', $pages['content'], '60'),
+			'social_img' => $core->setting[1]['value'].'/'.DIR_CON.'/uploads/'.$pages['picture']
 		);
 		$adddata = array_merge($info, $lang);
 		$templates->addData(
@@ -51,14 +51,14 @@ $router->match('GET|POST', '/pages/([a-z0-9_-]+)', function($seotitle) use ($cor
 	} else {
 		$info = array(
 			'page_title' => $lang['front_pages_not_found'],
-			'page_desc' => $core->posetting[2]['value'],
-			'page_key' => $core->posetting[3]['value'],
+			'page_desc' => $core->setting[2]['value'],
+			'page_key' => $core->setting[3]['value'],
 			'social_mod' => $lang['front_pages_title'],
-			'social_name' => $core->posetting[0]['value'],
-			'social_url' => $core->posetting[1]['value'],
+			'social_name' => $core->setting[0]['value'],
+			'social_url' => $core->setting[1]['value'],
 			'social_title' => $lang['front_pages_not_found'],
-			'social_desc' => $core->posetting[2]['value'],
-			'social_img' => $core->posetting[1]['value'].'/'.DIR_INC.'/images/favicon.png'
+			'social_desc' => $core->setting[2]['value'],
+			'social_img' => $core->setting[1]['value'].'/'.DIR_INC.'/images/favicon.png'
 		);
 		$adddata = array_merge($info, $lang);
 		$templates->addData(
